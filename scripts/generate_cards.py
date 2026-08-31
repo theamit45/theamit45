@@ -6,8 +6,12 @@ github-readme-activity-graph) are chronically rate limited or over quota, and
 none of them can see private repositories. This queries the GitHub GraphQL API
 directly and writes self-hosted SVGs into assets/.
 
-Animation uses SMIL rather than CSS keyframes because SMIL is what renders
-reliably when an SVG is embedded through GitHub's camo image proxy.
+Two constraints shape how these are drawn:
+
+* Animation uses SMIL, not CSS keyframes, because SMIL is what survives
+  GitHub's camo image proxy.
+* An SVG embedded through <img> cannot load anything external, so the tech
+  logos in assets/icons are inlined into the output rather than referenced.
 
 Requires a token in GH_TOKEN or GITHUB_TOKEN with the `repo` scope so that
 private repositories are included in the totals.
@@ -15,13 +19,16 @@ private repositories are included in the totals.
 
 import json
 import os
+import re
 import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-ASSETS = Path(__file__).resolve().parent.parent / "assets"
+ROOT = Path(__file__).resolve().parent.parent
+ASSETS = ROOT / "assets"
+ICON_DIR = ASSETS / "icons"
 
 BG = "#1a1b27"
 BORDER = "#2f3352"
@@ -30,6 +37,8 @@ TEXT = "#a9b1d6"
 VALUE = "#00CED1"
 FONT = "'Segoe UI', Ubuntu, Sans-Serif"
 MONO = "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
+
+PURPLE, BLUE, CYAN = "#8A2BE2", "#4169E1", "#00CED1"
 
 # Only a subset of Dynamo work lands in this account's repositories, so the
 # total is tracked by hand rather than counted from repo names.
@@ -88,6 +97,9 @@ def esc(text):
     )
 
 
+# --------------------------------------------------------------------------
+# animation helpers
+# --------------------------------------------------------------------------
 # Every entrance animation starts at t=0 and encodes its delay in keyTimes
 # instead of using begin="…s". That matters for two reasons: the element never
 # flashes at its base value before the animation takes over, and the base
@@ -104,16 +116,79 @@ def fade_in(delay, dur=0.55, total=ENTRANCE):
     )
 
 
-def slide_in(delay, dx=-14, dur=0.55, total=ENTRANCE):
+def slide_in(delay, dx=-14, dy=0, dur=0.55, total=ENTRANCE):
     a, b = delay / total, min((delay + dur) / total, 1.0)
     return (
         f'<animateTransform attributeName="transform" type="translate" '
-        f'values="{dx},0;{dx},0;0,0;0,0" '
+        f'values="{dx},{dy};{dx},{dy};0,0;0,0" '
         f'keyTimes="0;{a:.4f};{b:.4f};1" dur="{total}s" fill="freeze"/>'
     )
 
 
-def frame(width, height, title, body, title_delay=0.1):
+def bob(phase, amount=3.0, dur=4.6):
+    """A slow vertical drift, desynchronised between elements by a negative
+    begin so they do not all rise and fall together."""
+    return (
+        f'<animateTransform attributeName="transform" type="translate" '
+        f'values="0,0;0,{-amount};0,0" dur="{dur}s" begin="-{phase:.2f}s" '
+        f'repeatCount="indefinite"/>'
+    )
+
+
+# --------------------------------------------------------------------------
+# shared animated backdrop
+# --------------------------------------------------------------------------
+def backdrop(width, height, uid, rx=10):
+    """A drifting dot grid over slowly moving colour blooms.
+
+    Returns (defs, background) so callers can place the defs in their own
+    <defs> block. Every id is namespaced by uid because several of these can
+    end up in one document.
+    """
+    orbs = [
+        (PURPLE, 0.30, width * 0.18, height * 0.30, max(width, height) * 0.42, 17),
+        (CYAN, 0.24, width * 0.82, height * 0.66, max(width, height) * 0.38, 23),
+        (BLUE, 0.26, width * 0.52, height * 0.85, max(width, height) * 0.40, 29),
+    ]
+
+    grads = "".join(
+        f'<radialGradient id="{uid}o{i}">'
+        f'<stop offset="0%" stop-color="{c}" stop-opacity="{o}"/>'
+        f'<stop offset="100%" stop-color="{c}" stop-opacity="0"/>'
+        f"</radialGradient>"
+        for i, (c, o, *_rest) in enumerate(orbs)
+    )
+
+    defs = f"""<pattern id="{uid}grid" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.05" fill="#2c3150"/>
+      <animateTransform attributeName="patternTransform" type="translate"
+        values="0,0;26,26" dur="20s" repeatCount="indefinite"/>
+    </pattern>
+    {grads}
+    <clipPath id="{uid}clip"><rect x="0.5" y="0.5" rx="{rx}" width="{width - 1}" height="{height - 1}"/></clipPath>"""
+
+    blobs = ""
+    for i, (_c, _o, cx, cy, r, dur) in enumerate(orbs):
+        dx, dy = width * 0.16, height * 0.20
+        blobs += (
+            f'<circle cx="{cx:.0f}" cy="{cy:.0f}" r="{r:.0f}" fill="url(#{uid}o{i})">'
+            f'<animate attributeName="cx" values="{cx:.0f};{cx + dx:.0f};{cx - dx:.0f};{cx:.0f}" '
+            f'dur="{dur}s" repeatCount="indefinite"/>'
+            f'<animate attributeName="cy" values="{cy:.0f};{cy - dy:.0f};{cy + dy:.0f};{cy:.0f}" '
+            f'dur="{dur * 1.3:.0f}s" repeatCount="indefinite"/>'
+            f"</circle>"
+        )
+
+    background = f"""<g clip-path="url(#{uid}clip)">
+    <rect width="{width}" height="{height}" fill="{BG}"/>
+    {blobs}
+    <rect width="{width}" height="{height}" fill="url(#{uid}grid)"/>
+  </g>"""
+    return defs, background
+
+
+def frame(width, height, title, body, uid, title_delay=0.1):
+    defs, background = backdrop(width, height, uid)
     return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" fill="none" xmlns="http://www.w3.org/2000/svg">
   <style>
     .title {{ font: 600 18px {FONT}; fill: {TITLE}; }}
@@ -121,13 +196,126 @@ def frame(width, height, title, body, title_delay=0.1):
     .value {{ font: 600 14px {FONT}; fill: {VALUE}; }}
     .small {{ font: 400 12px {FONT}; fill: {TEXT}; }}
   </style>
-  <rect x="0.5" y="0.5" rx="8" width="{width - 1}" height="{height - 1}" fill="{BG}" stroke="{BORDER}"/>
+  <defs>
+    {defs}
+  </defs>
+  {background}
+  <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1}" fill="none" stroke="{BORDER}"/>
   <g opacity="1"><text x="25" y="35" class="title">{esc(title)}</text>{fade_in(title_delay)}</g>
   {body}
 </svg>
 """
 
 
+# --------------------------------------------------------------------------
+# tech logos
+# --------------------------------------------------------------------------
+# devicon ships these three with no usable fill on a dark background: express
+# and linux declare none at all (so they default to black) and github is
+# near-black. The first two inherit a fill from their wrapping group, the third
+# needs its hex swapped out.
+ICON_INHERIT_FILL = {"express": "#e6edf3", "linux": "#FCC624"}
+ICON_RECOLOUR = {
+    "github": [("#181616", "#e6edf3")],
+    "bash": [("#293138", "#41505c")],
+}
+
+ICON_LABELS = {
+    "python": "Python", "cplusplus": "C++", "c": "C", "java": "Java",
+    "javascript": "JavaScript", "bash": "Bash", "react": "React",
+    "nodejs": "Node.js", "express": "Express", "mongodb": "MongoDB",
+    "html5": "HTML5", "css3": "CSS3", "docker": "Docker", "linux": "Linux",
+    "git": "Git", "github": "GitHub", "pytest": "Pytest", "vscode": "VS Code",
+}
+
+TECH_GROUPS = [
+    ("Languages", ["python", "cplusplus", "c", "java", "javascript", "bash"]),
+    ("Web and Data", ["react", "nodejs", "express", "mongodb", "html5", "css3"]),
+    ("Evaluation Toolchain", ["docker", "linux", "git", "github", "pytest", "vscode"]),
+]
+
+
+def inline_icon(name, x, y, size):
+    """Drop a devicon logo into the document at (x, y), scaled to `size`.
+
+    All devicon files share a 0 0 128 128 viewBox, so scaling is a single
+    factor. Internal ids are namespaced because a dozen of these share one
+    document and several define gradients called "a", "b", "c".
+    """
+    raw = (ICON_DIR / f"{name}.svg").read_text()
+    inner = raw[raw.index(">", raw.index("<svg")) + 1: raw.rindex("</svg>")]
+
+    for old, new in ICON_RECOLOUR.get(name, []):
+        inner = inner.replace(old, new)
+
+    for ident in set(re.findall(r'id="([^"]+)"', inner)):
+        scoped = f"{name}-{ident}"
+        inner = inner.replace(f'id="{ident}"', f'id="{scoped}"')
+        inner = inner.replace(f"url(#{ident})", f"url(#{scoped})")
+        inner = inner.replace(f'href="#{ident}"', f'href="#{scoped}"')
+
+    fill = ICON_INHERIT_FILL.get(name)
+    fill_attr = f' fill="{fill}"' if fill else ""
+    scale = size / 128
+    return (
+        f'<g transform="translate({x:.1f},{y:.1f}) scale({scale:.5f})"{fill_attr}>'
+        f"{inner}</g>"
+    )
+
+
+def tech_panel(width=900):
+    cols = 6
+    pad_x = 26
+    col_w = (width - pad_x * 2) / cols
+    tile_w, tile_h, icon_px = 112.0, 84.0, 42.0
+    group_gap, label_h = 20.0, 22.0
+
+    top = 20.0
+    height = top + len(TECH_GROUPS) * (label_h + tile_h + group_gap) - group_gap + 14
+
+    uid = "tp"
+    defs, background = backdrop(width, int(height), uid)
+
+    parts, y, index = [], top, 0
+    for group_name, names in TECH_GROUPS:
+        parts.append(
+            f'<g opacity="1">{fade_in(round(0.15 + index * 0.05, 2), 0.5)}'
+            f'<text x="{pad_x + 6}" y="{y + 13}" font-family="{FONT}" font-size="12" '
+            f'font-weight="600" letter-spacing="1.6" fill="{TEXT}" '
+            f'fill-opacity="0.75">{esc(group_name.upper())}</text></g>'
+        )
+
+        row_y = y + label_h
+        for col, name in enumerate(names):
+            cx = pad_x + col * col_w + (col_w - tile_w) / 2
+            delay = round(0.25 + index * 0.06, 2)
+            parts.append(
+                f'<g opacity="1">{fade_in(delay, 0.5)}{slide_in(delay, 0, 10)}'
+                f"<g>{bob(index * 0.42)}"
+                f'<rect x="{cx:.1f}" y="{row_y:.1f}" rx="12" width="{tile_w}" height="{tile_h}" '
+                f'fill="#20233a" fill-opacity="0.72" stroke="{BORDER}"/>'
+                f"{inline_icon(name, cx + (tile_w - icon_px) / 2, row_y + 13, icon_px)}"
+                f'<text x="{cx + tile_w / 2:.1f}" y="{row_y + 72:.1f}" text-anchor="middle" '
+                f'font-family="{FONT}" font-size="11.5" fill="{TEXT}">{esc(ICON_LABELS[name])}</text>'
+                f"</g></g>"
+            )
+            index += 1
+        y = row_y + tile_h + group_gap
+
+    return f"""<svg width="{width}" height="{height:.0f}" viewBox="0 0 {width} {height:.0f}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    {defs}
+  </defs>
+  {background}
+  <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1:.0f}" fill="none" stroke="{BORDER}"/>
+  {"".join(parts)}
+</svg>
+"""
+
+
+# --------------------------------------------------------------------------
+# cards
+# --------------------------------------------------------------------------
 def overview_card(stats):
     rows = [
         ("Total Repositories", stats["repos"]),
@@ -146,7 +334,7 @@ def overview_card(stats):
             f"</g>"
         )
         y += 26
-    return frame(450, 195, "GitHub Overview", "\n  ".join(body))
+    return frame(450, 195, "GitHub Overview", "\n  ".join(body), "ov")
 
 
 def language_card(langs, total):
@@ -162,14 +350,12 @@ def language_card(langs, total):
         segments.append(f'<rect x="{x:.1f}" y="55" width="{bar_x + bar_w - x:.1f}" height="10" fill="#858585"/>')
 
     body = [
-        f"""<defs>
-    <clipPath id="wipe">
-      <rect x="{bar_x}" y="53" width="{bar_w}" height="14">
-        <animate attributeName="width" values="0;0;{bar_w};{bar_w}"
-                 keyTimes="0;0.125;0.583;1" dur="{ENTRANCE}s" fill="freeze"/>
-      </rect>
-    </clipPath>
-  </defs>
+        f"""<clipPath id="wipe">
+    <rect x="{bar_x}" y="53" width="{bar_w}" height="14">
+      <animate attributeName="width" values="0;0;{bar_w};{bar_w}"
+               keyTimes="0;0.125;0.583;1" dur="{ENTRANCE}s" fill="freeze"/>
+    </rect>
+  </clipPath>
   <g clip-path="url(#wipe)">{"".join(segments)}</g>"""
     ]
 
@@ -188,17 +374,19 @@ def language_card(langs, total):
             y += 24
     if len(shown) % 2 == 1:
         y += 24
-    return frame(width, 195, "Most Used Languages", "\n  ".join(body))
+    return frame(width, 195, "Most Used Languages", "\n  ".join(body), "lang")
 
 
+# --------------------------------------------------------------------------
+# banners and dividers
+# --------------------------------------------------------------------------
 def wave_path(width, height, baseline, amplitude):
     half = width / 2
     return f"M0,{baseline} q{half / 2},{-amplitude} {half},0 t{half},0 V{height} H0 Z"
 
 
-def banner(width, height, stops, title=None, subtitle=None, seconds=14):
-    """A gradient banner with two scrolling wave layers, replacing capsule-render."""
-    gid = f"g{abs(hash(tuple(stops))) % 10000}"
+def banner(width, height, stops, uid, title=None, subtitle=None, seconds=14):
+    """A gradient banner with scrolling waves over the shared backdrop."""
     stop_tags = "\n      ".join(
         f'<stop offset="{off}%" stop-color="{color}"/>' for off, color in stops
     )
@@ -246,13 +434,19 @@ def banner(width, height, stops, title=None, subtitle=None, seconds=14):
     return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}"
      xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
   <defs>
-    <linearGradient id="{gid}" x1="0" y1="0" x2="1" y2="0">
+    <linearGradient id="{uid}g" x1="0" y1="0" x2="1" y2="0">
       {stop_tags}
     </linearGradient>
-    <clipPath id="bclip"><rect width="{width}" height="{height}"/></clipPath>
+    <pattern id="{uid}dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1" fill="#ffffff" fill-opacity="0.16"/>
+      <animateTransform attributeName="patternTransform" type="translate"
+        values="0,0;24,24" dur="16s" repeatCount="indefinite"/>
+    </pattern>
+    <clipPath id="{uid}clip"><rect width="{width}" height="{height}"/></clipPath>
   </defs>
-  <g clip-path="url(#bclip)">
-    <rect width="{width}" height="{height}" fill="url(#{gid})"/>
+  <g clip-path="url(#{uid}clip)">
+    <rect width="{width}" height="{height}" fill="url(#{uid}g)"/>
+    <rect width="{width}" height="{height}" fill="url(#{uid}dots)"/>
     {"".join(layers)}
     {shimmer}
   </g>
@@ -261,6 +455,35 @@ def banner(width, height, stops, title=None, subtitle=None, seconds=14):
 """
 
 
+def divider(width=900, height=8):
+    """A hairline rule with a light pulse running along it, used between
+    sections in place of a plain markdown rule."""
+    return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}"
+     xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="dvline" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="{PURPLE}" stop-opacity="0"/>
+      <stop offset="18%" stop-color="{PURPLE}" stop-opacity="0.85"/>
+      <stop offset="50%" stop-color="{BLUE}" stop-opacity="0.85"/>
+      <stop offset="82%" stop-color="{CYAN}" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="{CYAN}" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="dvpulse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect y="{height / 2 - 0.75}" width="{width}" height="1.5" fill="url(#dvline)"/>
+  <ellipse cy="{height / 2}" rx="70" ry="{height / 2}" fill="url(#dvpulse)">
+    <animate attributeName="cx" values="{-80};{width + 80}" dur="6s" repeatCount="indefinite"/>
+  </ellipse>
+</svg>
+"""
+
+
+# --------------------------------------------------------------------------
+# terminal
+# --------------------------------------------------------------------------
 GREEN, RED, MUTED, DIM, FG, ACCENT = "#3fb950", "#f85149", "#7d8590", "#3d444d", "#e6edf3", "#00CED1"
 
 # (label, result, colour). Labels are padded to a fixed column so the dot
@@ -360,21 +583,23 @@ def main():
     }
 
     ASSETS.mkdir(exist_ok=True)
-    (ASSETS / "github-stats.svg").write_text(overview_card(stats))
-    (ASSETS / "top-languages.svg").write_text(language_card(ranked, total))
-    (ASSETS / "terminal.svg").write_text(terminal_svg())
-    (ASSETS / "header.svg").write_text(
-        banner(
-            1000, 200,
-            [(0, "#8A2BE2"), (50, "#4169E1"), (100, "#00CED1")],
+    written = {
+        "github-stats.svg": overview_card(stats),
+        "top-languages.svg": language_card(ranked, total),
+        "terminal.svg": terminal_svg(),
+        "tech-stack.svg": tech_panel(),
+        "divider.svg": divider(),
+        "header.svg": banner(
+            1000, 200, [(0, PURPLE), (50, BLUE), (100, CYAN)], "hdr",
             title="Amit Kumar Maurya",
             subtitle="AI Evaluation Specialist & Benchmark Engineer",
-        )
-    )
-    (ASSETS / "footer.svg").write_text(
-        banner(1000, 120, [(0, "#00CED1"), (50, "#4169E1"), (100, "#8A2BE2")])
-    )
-    print(f"wrote 5 assets to {ASSETS}")
+        ),
+        "footer.svg": banner(1000, 120, [(0, CYAN), (50, BLUE), (100, PURPLE)], "ftr"),
+    }
+    for name, content in written.items():
+        (ASSETS / name).write_text(content)
+
+    print(f"wrote {len(written)} assets to {ASSETS}")
     print(stats)
 
 
