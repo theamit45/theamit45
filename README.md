@@ -11,8 +11,6 @@
 <a href="mailto:amitmaurya7071@gmail.com" title="Email amitmaurya7071@gmail.com"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contact-email.svg" alt="Email amitmaurya7071@gmail.com" /></a>
 <a href="https://www.linkedin.com/in/amit-kumar-maurya-a2a244235/" title="Connect with Amit Kumar Maurya on LinkedIn"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contact-linkedin.svg" alt="LinkedIn, in/amit-kumar-maurya" /></a>
 
-<br/><br/>
-
 <img src="https://komarev.com/ghpvc/?username=theamit45&label=Profile%20Views&color=8A2BE2&style=for-the-badge" alt="profile views" />
 <a href="https://github.com/theamit45?tab=followers"><img src="https://img.shields.io/github/followers/theamit45?label=Followers&style=for-the-badge&color=4169E1&labelColor=1a1b27" alt="followers" /></a>
 <img src="https://img.shields.io/badge/Focus-AI%20Evaluation-00CED1?style=for-the-badge&labelColor=1a1b27" alt="focus" />

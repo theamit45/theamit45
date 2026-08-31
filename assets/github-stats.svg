@@ -20,10 +20,11 @@
     <rect width="450" height="195" fill="url(#ovgrid)"/>
   </g>
   <rect x="0.5" y="0.5" rx="10" width="449" height="194" fill="none" stroke="#2f3352"/>
-  <g opacity="1"><text x="25" y="35" class="title">GitHub Overview</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.0417;0.2708;1" dur="2.4s" fill="freeze"/></g>
-  <g opacity="1"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.1458;0.3750;1" dur="2.4s" fill="freeze"/><animateTransform attributeName="transform" type="translate" values="-14,0;-14,0;0,0;0,0" keyTimes="0;0.1458;0.3750;1" dur="2.4s" fill="freeze"/><text x="25" y="68" class="label">Total Repositories</text><text x="425" y="68" class="value" text-anchor="end">60</text></g>
-  <g opacity="1"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.2000;0.4292;1" dur="2.4s" fill="freeze"/><animateTransform attributeName="transform" type="translate" values="-14,0;-14,0;0,0;0,0" keyTimes="0;0.2000;0.4292;1" dur="2.4s" fill="freeze"/><text x="25" y="94" class="label">Private Repositories</text><text x="425" y="94" class="value" text-anchor="end">58</text></g>
-  <g opacity="1"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.2542;0.4833;1" dur="2.4s" fill="freeze"/><animateTransform attributeName="transform" type="translate" values="-14,0;-14,0;0,0;0,0" keyTimes="0;0.2542;0.4833;1" dur="2.4s" fill="freeze"/><text x="25" y="120" class="label">Dynamo Tasks Shipped</text><text x="425" y="120" class="value" text-anchor="end">150+</text></g>
-  <g opacity="1"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.3083;0.5375;1" dur="2.4s" fill="freeze"/><animateTransform attributeName="transform" type="translate" values="-14,0;-14,0;0,0;0,0" keyTimes="0;0.3083;0.5375;1" dur="2.4s" fill="freeze"/><text x="25" y="146" class="label">Languages Used</text><text x="425" y="146" class="value" text-anchor="end">9</text></g>
-  <g opacity="1"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.3625;0.5917;1" dur="2.4s" fill="freeze"/><animateTransform attributeName="transform" type="translate" values="-14,0;-14,0;0,0;0,0" keyTimes="0;0.3625;0.5917;1" dur="2.4s" fill="freeze"/><text x="25" y="172" class="label">Primary Language</text><text x="425" y="172" class="value" text-anchor="end">Python</text></g>
+  <text x="25" y="35" class="title">GitHub Overview</text>
+  <text x="25" y="68" class="label">Total Repositories</text><text x="425" y="68" class="value" text-anchor="end">60</text>
+  <text x="25" y="94" class="label">Private Repositories</text><text x="425" y="94" class="value" text-anchor="end">58</text>
+  <text x="25" y="120" class="label">Dynamo Tasks Shipped</text><text x="425" y="120" class="value" text-anchor="end">150+</text>
+  <text x="25" y="146" class="label">Languages Used</text><text x="425" y="146" class="value" text-anchor="end">9</text>
+  <text x="25" y="172" class="label">Primary Language</text><text x="425" y="172" class="value" text-anchor="end">Python</text>
+  <g clip-path="url(#ovclip)" opacity="0.07"><rect x="-158" y="-195" width="58" height="585" fill="#ffffff" transform="rotate(14)"><animate attributeName="x" values="-225;562" dur="8.5s" repeatCount="indefinite"/></rect></g>
 </svg>

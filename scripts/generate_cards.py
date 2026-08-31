@@ -172,31 +172,11 @@ def esc(text):
 # --------------------------------------------------------------------------
 # animation helpers
 # --------------------------------------------------------------------------
-# Every entrance animation starts at t=0 and encodes its delay in keyTimes
-# instead of using begin="…s". That matters for two reasons: the element never
-# flashes at its base value before the animation takes over, and the base
-# attribute can be left at the *finished* state so anything that does not run
-# SMIL (reduced-motion settings, static renderers) still shows the content.
-ENTRANCE = 2.4
-
-
-def fade_in(delay, dur=0.55, total=ENTRANCE):
-    a, b = delay / total, min((delay + dur) / total, 1.0)
-    return (
-        f'<animate attributeName="opacity" values="0;0;1;1" '
-        f'keyTimes="0;{a:.4f};{b:.4f};1" dur="{total}s" fill="freeze"/>'
-    )
-
-
-def slide_in(delay, dx=-14, dy=0, dur=0.55, total=ENTRANCE):
-    a, b = delay / total, min((delay + dur) / total, 1.0)
-    return (
-        f'<animateTransform attributeName="transform" type="translate" '
-        f'values="{dx},{dy};{dx},{dy};0,0;0,0" '
-        f'keyTimes="0;{a:.4f};{b:.4f};1" dur="{total}s" fill="freeze"/>'
-    )
-
-
+# There are deliberately no entrance animations in here. A browser does not
+# advance an SMIL timeline for an <img> it has not painted, so anything that
+# starts at opacity 0 or at zero width renders as an empty box for as long as
+# it sits below the fold. Motion comes from loops that look correct on their
+# very first frame instead: the drifting backdrop, bob() and sweep().
 def bob(phase, amount=3.0, dur=4.6):
     """A slow vertical drift, desynchronised between elements by a negative
     begin so they do not all rise and fall together."""
@@ -289,8 +269,9 @@ def frame(width, height, title, body, uid, title_delay=0.1):
   </defs>
   {background}
   <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1}" fill="none" stroke="{BORDER}"/>
-  <g opacity="1"><text x="25" y="35" class="title">{esc(title)}</text>{fade_in(title_delay)}</g>
+  <text x="25" y="35" class="title">{esc(title)}</text>
   {body}
+  {sweep(width, height, uid, 8.5)}
 </svg>
 """
 
@@ -696,13 +677,10 @@ def overview_card(stats):
         ("Primary Language", stats["primary"]),
     ]
     body, y = [], 68
-    for i, (label, value) in enumerate(rows):
-        delay = round(0.35 + i * 0.13, 2)
+    for label, value in rows:
         body.append(
-            f'<g opacity="1">{fade_in(delay)}{slide_in(delay)}'
             f'<text x="25" y="{y}" class="label">{esc(label)}</text>'
             f'<text x="425" y="{y}" class="value" text-anchor="end">{esc(value)}</text>'
-            f"</g>"
         )
         y += 26
     return frame(450, 195, "GitHub Overview", "\n  ".join(body), "ov")
@@ -720,26 +698,15 @@ def language_card(langs, total):
     if x < bar_x + bar_w:
         segments.append(f'<rect x="{x:.1f}" y="55" width="{bar_x + bar_w - x:.1f}" height="10" fill="#858585"/>')
 
-    body = [
-        f"""<clipPath id="wipe">
-    <rect x="{bar_x}" y="53" width="{bar_w}" height="14">
-      <animate attributeName="width" values="0;0;{bar_w};{bar_w}"
-               keyTimes="0;0.125;0.583;1" dur="{ENTRANCE}s" fill="freeze"/>
-    </rect>
-  </clipPath>
-  <g clip-path="url(#wipe)">{"".join(segments)}</g>"""
-    ]
+    body = ["".join(segments)]
 
     y = 95
     for i, (name, size, color) in enumerate(shown):
         col_x = bar_x if i % 2 == 0 else bar_x + 155
-        delay = round(1.0 + i * 0.11, 2)
         pct = 100 * size / total
         body.append(
-            f'<g opacity="1">{fade_in(delay, 0.45)}'
             f'<circle cx="{col_x + 5}" cy="{y - 4}" r="5" fill="{color or "#858585"}"/>'
             f'<text x="{col_x + 18}" y="{y}" class="small">{esc(name)} {pct:.1f}%</text>'
-            f"</g>"
         )
         if i % 2 == 1:
             y += 24
