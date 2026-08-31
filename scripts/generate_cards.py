@@ -20,11 +20,25 @@ private repositories are included in the totals.
 import json
 import os
 import re
+import ssl
 import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
 from urllib.request import Request, urlopen
+
+
+def ssl_context():
+    """python.org builds on macOS ship without a populated trust store, so fall
+    back to certifi when OpenSSL has no CA file configured. Returning None lets
+    urlopen use the system default, which is what happens on CI."""
+    if ssl.get_default_verify_paths().cafile:
+        return None
+    try:
+        import certifi
+    except ImportError:
+        return None
+    return ssl.create_default_context(cafile=certifi.where())
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
@@ -72,7 +86,7 @@ def gql(query):
                 "User-Agent": "profile-card-generator",
             },
         )
-        with urlopen(req, timeout=30) as resp:
+        with urlopen(req, timeout=30, context=ssl_context()) as resp:
             payload = json.load(resp)
     else:
         out = subprocess.run(
@@ -88,6 +102,49 @@ def gql(query):
 
 def fetch():
     return gql(QUERY)["viewer"]
+
+
+LEETCODE_USER = "theamit45"
+LEETCODE_QUERY = """
+query u($username: String!) {
+  matchedUser(username: $username) {
+    profile { ranking }
+    submitStatsGlobal { acSubmissionNum { difficulty count submissions } }
+  }
+  allQuestionsCount { difficulty count }
+}
+"""
+
+
+def fetch_leetcode(username=LEETCODE_USER):
+    """LeetCode's API is unofficial and unauthenticated, so treat a failure as
+    'no new data' rather than an error. The caller keeps the card that is
+    already committed instead of overwriting it with placeholder numbers.
+    """
+    req = Request(
+        "https://leetcode.com/graphql",
+        data=json.dumps({"query": LEETCODE_QUERY, "variables": {"username": username}}).encode(),
+        headers={
+            "Content-Type": "application/json",
+            "Referer": f"https://leetcode.com/u/{username}/",
+            "User-Agent": "Mozilla/5.0 (profile-card-generator)",
+        },
+    )
+    try:
+        with urlopen(req, timeout=20, context=ssl_context()) as resp:
+            data = json.load(resp)["data"]
+        user = data["matchedUser"]
+        solved = {r["difficulty"]: r["count"] for r in user["submitStatsGlobal"]["acSubmissionNum"]}
+        subs = {r["difficulty"]: r["submissions"] for r in user["submitStatsGlobal"]["acSubmissionNum"]}
+        return {
+            "solved": solved,
+            "submissions": subs.get("All", 0),
+            "ranking": user["profile"]["ranking"],
+            "available": {r["difficulty"]: r["count"] for r in data["allQuestionsCount"]},
+        }
+    except Exception as exc:
+        print(f"LeetCode fetch failed ({exc}), keeping the committed card")
+        return None
 
 
 def fetch_calendar(year):
@@ -388,6 +445,18 @@ def _flow(items, max_w, gap=10.0):
     return rows
 
 
+def render_chip(x, y, label, color, w, index):
+    return (
+        f"<g>{bob(index * 0.31, 2.4 + index % 3, 4.4 + (index % 5) * 0.4)}"
+        f'<rect x="{x:.1f}" y="{y:.1f}" rx="{CHIP_H / 2}" width="{w:.1f}" height="{CHIP_H}" '
+        f'fill="{color}" fill-opacity="0.13" stroke="{color}" stroke-opacity="0.55"/>'
+        f'<circle cx="{x + 17:.1f}" cy="{y + CHIP_H / 2:.1f}" r="4.5" fill="{color}"/>'
+        f'<text x="{x + 30:.1f}" y="{y + CHIP_H / 2 + 4.6:.1f}" font-family="{FONT}" '
+        f'font-size="{CHIP_FONT}" font-weight="600" fill="#e6edf3">{esc(label)}</text>'
+        f"</g>"
+    )
+
+
 def focus_panel(width=900):
     pad_x, gap, row_gap, group_gap, label_h = 26.0, 10.0, 12.0, 24.0, 22.0
     max_w = width - pad_x * 2
@@ -418,15 +487,7 @@ def focus_panel(width=900):
         row, row_w = payload
         x = (width - row_w) / 2
         for label, color, w in row:
-            parts.append(
-                f"<g>{bob(index * 0.31, 2.4 + index % 3, 4.4 + (index % 5) * 0.4)}"
-                f'<rect x="{x:.1f}" y="{yy:.1f}" rx="{CHIP_H / 2}" width="{w:.1f}" height="{CHIP_H}" '
-                f'fill="{color}" fill-opacity="0.13" stroke="{color}" stroke-opacity="0.55"/>'
-                f'<circle cx="{x + 17:.1f}" cy="{yy + CHIP_H / 2:.1f}" r="4.5" fill="{color}"/>'
-                f'<text x="{x + 30:.1f}" y="{yy + CHIP_H / 2 + 4.6:.1f}" font-family="{FONT}" '
-                f'font-size="{CHIP_FONT}" font-weight="600" fill="#e6edf3">{esc(label)}</text>'
-                f"</g>"
-            )
+            parts.append(render_chip(x, yy, label, color, w, index))
             x += w + gap
             index += 1
 
@@ -438,6 +499,107 @@ def focus_panel(width=900):
   <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1:.0f}" fill="none" stroke="{BORDER}"/>
   {"".join(parts)}
   {sweep(width, int(height), uid, 10.0)}
+</svg>
+"""
+
+
+# --------------------------------------------------------------------------
+# DSA panel
+# --------------------------------------------------------------------------
+DSA_TOTAL = "350+"
+DIFF_COLORS = {"Easy": "#00B8A3", "Medium": "#FFC01E", "Hard": "#FF375F"}
+PLATFORMS = [
+    ("LeetCode", "#FFA116"), ("GeeksforGeeks", "#2F8D46"),
+    ("CodeChef", "#5B4638"), ("Coding Ninjas", "#DD6620"),
+]
+
+
+def dsa_panel(lc, width=900):
+    height = 296
+    uid = "dsa"
+    defs, background = backdrop(width, height, uid)
+
+    solved = lc["solved"]
+    available = lc["available"]
+    total_solved = solved.get("All", 0)
+    order = ["Easy", "Medium", "Hard"]
+
+    # Donut split by difficulty. Drawn complete at rest with a dot orbiting it,
+    # rather than an arc that grows, so the first frame is already correct.
+    cx, cy, r, stroke = 152.0, 142.0, 66.0, 16.0
+    circumference = 2 * 3.141592653589793 * r
+    arcs, offset = [], 0.0
+    for name in order:
+        frac = (solved.get(name, 0) / total_solved) if total_solved else 0
+        seg = circumference * frac
+        arcs.append(
+            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{DIFF_COLORS[name]}" '
+            f'stroke-width="{stroke}" stroke-dasharray="{seg:.2f} {circumference - seg:.2f}" '
+            f'stroke-dashoffset="{-offset:.2f}" transform="rotate(-90 {cx} {cy})"/>'
+        )
+        offset += seg
+
+    orbit = (
+        f'<g><circle cx="{cx}" cy="{cy - r}" r="4.5" fill="#ffffff" fill-opacity="0.9"/>'
+        f'<animateTransform attributeName="transform" type="rotate" '
+        f'values="0 {cx} {cy};360 {cx} {cy}" dur="9s" repeatCount="indefinite"/></g>'
+    )
+
+    donut = (
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#252a4a" stroke-width="{stroke}"/>'
+        + "".join(arcs) + orbit
+        + f'<text x="{cx}" y="{cy + 4}" text-anchor="middle" font-family="{FONT}" font-size="34" '
+          f'font-weight="700" fill="#e6edf3">{total_solved}</text>'
+        + f'<text x="{cx}" y="{cy + 26}" text-anchor="middle" font-family="{FONT}" font-size="11.5" '
+          f'fill="{TEXT}" fill-opacity="0.85">LeetCode solved</text>'
+    )
+
+    x0, right = 296.0, float(width - 30)
+    peak = max((solved.get(n, 0) for n in order), default=1) or 1
+    bar_x, bar_w = 386.0, 300.0
+
+    rows = ""
+    for i, name in enumerate(order):
+        y = 116 + i * 38
+        count = solved.get(name, 0)
+        fill_w = max(bar_w * count / peak, 3)
+        rows += (
+            f'<text x="{x0}" y="{y + 4}" font-family="{FONT}" font-size="13.5" '
+            f'font-weight="600" fill="#e6edf3">{name}</text>'
+            f'<rect x="{bar_x}" y="{y - 5}" width="{bar_w}" height="9" rx="4.5" fill="#252a4a"/>'
+            f'<rect x="{bar_x}" y="{y - 5}" width="{fill_w:.1f}" height="9" rx="4.5" '
+            f'fill="{DIFF_COLORS[name]}"/>'
+            f'<text x="{right}" y="{y + 4}" text-anchor="end" font-family="{FONT}" font-size="12.5" '
+            f'fill="{TEXT}">{count} of {available.get(name, 0):,}</text>'
+        )
+
+    accepted = (100 * total_solved / lc["submissions"]) if lc["submissions"] else 0
+    header = (
+        f'<text x="{x0}" y="52" font-family="{FONT}" font-size="19" font-weight="700" '
+        f'fill="{TITLE}">{DSA_TOTAL} problems solved across four platforms</text>'
+        f'<text x="{x0}" y="76" font-family="{FONT}" font-size="12.5" fill="{TEXT}" '
+        f'fill-opacity="0.85">LeetCode breakdown, acceptance {accepted:.0f}% over '
+        f'{lc["submissions"]} submissions, global rank #{lc["ranking"]:,}</text>'
+    )
+
+    chips, widths = [], [_chip_width(n) for n, _ in PLATFORMS]
+    row_w = sum(widths) + 10 * (len(PLATFORMS) - 1)
+    cxp = (width - row_w) / 2
+    for i, ((name, colour), w) in enumerate(zip(PLATFORMS, widths)):
+        chips.append(render_chip(cxp, 236, name, colour, w, i))
+        cxp += w + 10
+
+    return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    {defs}
+  </defs>
+  {background}
+  <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1}" fill="none" stroke="{BORDER}"/>
+  {donut}
+  {header}
+  {rows}
+  {"".join(chips)}
+  {sweep(width, height, uid, 9.5)}
 </svg>
 """
 
@@ -602,7 +764,41 @@ def wave_path(width, height, baseline, amplitude):
     return f"M0,{baseline} q{half / 2},{-amplitude} {half},0 t{half},0 V{height} H0 Z"
 
 
-def banner(width, height, stops, uid, title=None, subtitle=None, seconds=14):
+# Material "email" and the LinkedIn wordmark, both authored on a 24x24 grid.
+MAIL_PATH = (
+    "M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
+    "m0 4l-8 5-8-5V6l8 5 8-5v2z"
+)
+LINKEDIN_PATH = (
+    "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 "
+    "2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 "
+    "4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 "
+    "2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 "
+    "13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 "
+    "24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"
+)
+
+
+def contact_row(width, y, items, size=17.0, font=15.0, gap=34.0):
+    """Icon plus label pairs centred on a banner. The labels are plain text
+    because an SVG loaded through <img> cannot carry working links, so the
+    clickable versions stay in the README's Connect section."""
+    scale = size / 24.0
+    widths = [size + 9 + len(text) * font * 0.52 for _, text in items]
+    x = (width - (sum(widths) + gap * (len(items) - 1))) / 2
+    out = []
+    for (path, text), w in zip(items, widths):
+        out.append(
+            f'<g transform="translate({x:.1f},{y - size + 3:.1f}) scale({scale:.4f})">'
+            f'<path d="{path}" fill="#ffffff" fill-opacity="0.95"/></g>'
+            f'<text x="{x + size + 9:.1f}" y="{y}" font-family="{FONT}" font-size="{font}" '
+            f'fill="#ffffff" fill-opacity="0.95">{esc(text)}</text>'
+        )
+        x += w + gap
+    return "".join(out)
+
+
+def banner(width, height, stops, uid, title=None, subtitle=None, contact=None, seconds=14):
     """A gradient banner with scrolling waves over the shared backdrop."""
     stop_tags = "\n      ".join(
         f'<stop offset="{off}%" stop-color="{color}"/>' for off, color in stops
@@ -632,21 +828,32 @@ def banner(width, height, stops, uid, title=None, subtitle=None, seconds=14):
     </rect>
   </g>"""
 
+    if contact and title:
+        title_y, sub_y, con_y = height * 0.38, height * 0.565, height * 0.775
+    elif contact:
+        title_y, sub_y, con_y = height * 0.40, height * 0.42, height * 0.74
+    elif title:
+        title_y, sub_y, con_y = (height * 0.44 if subtitle else height * 0.56), height * 0.66, 0
+    else:
+        title_y, sub_y, con_y = height * 0.56, height * 0.60, 0
+
+    # No entrance fades on the lettering. A browser will not advance an SMIL
+    # timeline for an <img> it has not painted yet, so anything that starts at
+    # opacity 0 can stay invisible on a banner below the fold.
     text = ""
     if title:
-        ty = height * 0.44 if subtitle else height * 0.56
         text += (
-            f'<g opacity="1">{fade_in(0.15, 0.9)}'
-            f'<text x="{width / 2}" y="{ty}" text-anchor="middle" '
-            f'font-family="{FONT}" font-size="46" font-weight="700" fill="#ffffff">{esc(title)}</text></g>'
+            f'<text x="{width / 2}" y="{title_y}" text-anchor="middle" '
+            f'font-family="{FONT}" font-size="46" font-weight="700" fill="#ffffff">{esc(title)}</text>'
         )
     if subtitle:
         text += (
-            f'\n  <g opacity="1">{fade_in(0.6, 0.9)}'
-            f'<text x="{width / 2}" y="{height * 0.66}" text-anchor="middle" '
-            f'font-family="{FONT}" font-size="19" font-weight="400" fill="#ffffff" '
-            f'fill-opacity="0.88">{esc(subtitle)}</text></g>'
+            f'\n  <text x="{width / 2}" y="{sub_y}" text-anchor="middle" '
+            f'font-family="{FONT}" font-size="{19 if title else 21}" font-weight="400" fill="#ffffff" '
+            f'fill-opacity="0.88">{esc(subtitle)}</text>'
         )
+    if contact:
+        text += f"\n  {contact_row(width, con_y, contact)}"
 
     return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}"
      xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -809,12 +1016,28 @@ def main():
         "contributions.svg": contribution_card(fetch_calendar(CONTRIB_YEAR), CONTRIB_YEAR),
         "divider.svg": divider(),
         "header.svg": banner(
-            1000, 200, [(0, PURPLE), (50, BLUE), (100, CYAN)], "hdr",
+            1000, 232, [(0, PURPLE), (50, BLUE), (100, CYAN)], "hdr",
             title="Amit Kumar Maurya",
             subtitle="AI Evaluation Specialist & Benchmark Engineer",
+            contact=[
+                (MAIL_PATH, "amitmaurya7071@gmail.com"),
+                (LINKEDIN_PATH, "in/amit-kumar-maurya"),
+            ],
         ),
-        "footer.svg": banner(1000, 120, [(0, CYAN), (50, BLUE), (100, PURPLE)], "ftr"),
+        "footer.svg": banner(
+            1000, 150, [(0, CYAN), (50, BLUE), (100, PURPLE)], "ftr",
+            subtitle="If it isn't tested, it doesn't work.",
+            contact=[
+                (MAIL_PATH, "amitmaurya7071@gmail.com"),
+                (LINKEDIN_PATH, "in/amit-kumar-maurya"),
+            ],
+        ),
     }
+
+    leetcode = fetch_leetcode()
+    if leetcode:
+        written["dsa.svg"] = dsa_panel(leetcode)
+
     for name, content in written.items():
         (ASSETS / name).write_text(content)
 

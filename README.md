@@ -111,16 +111,11 @@ Toolchain: `Docker` · `Python` · `Bash` · `Pytest` · `uv/uvx` · `TOML` · `
 
 <div align="center">
 
-<img src="https://leetcard.jacoblin.cool/theamit45?theme=nord&font=Fira%20Code&ext=heatmap" alt="LeetCode stats" />
-
-<br/><br/>
-
-![LeetCode](https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black)
-![GeeksforGeeks](https://img.shields.io/badge/GeeksforGeeks-2F8D46?style=for-the-badge&logo=geeksforgeeks&logoColor=white)
-![CodeChef](https://img.shields.io/badge/CodeChef-5B4638?style=for-the-badge&logo=codechef&logoColor=white)
-![Coding Ninjas](https://img.shields.io/badge/Coding%20Ninjas-DD6620?style=for-the-badge&logoColor=white)
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/dsa.svg" alt="350+ problems solved across LeetCode, GeeksforGeeks, CodeChef and Coding Ninjas, with a LeetCode breakdown of 48 easy, 32 medium and 3 hard" />
 
 </div>
+
+The LeetCode numbers are pulled live from LeetCode's API by [`scripts/generate_cards.py`](scripts/generate_cards.py), so the ring and the bars move on their own as I solve more.
 
 <img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/divider.svg" alt="" />
 
@@ -194,4 +189,4 @@ Relevant coursework: Data Structures & Algorithms, Operating Systems, Object Ori
 
 </div>
 
-<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/footer.svg" alt="" />
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/footer.svg" alt="If it isn't tested, it doesn't work. amitmaurya7071@gmail.com and linkedin.com/in/amit-kumar-maurya" />
