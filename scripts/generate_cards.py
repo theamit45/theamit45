@@ -136,6 +136,63 @@ def language_card(langs, total):
     return frame(width, 195, "Most Used Languages", "\n  ".join(body))
 
 
+def wave_path(width, height, baseline, amplitude):
+    half = width / 2
+    return (
+        f"M0,{baseline} q{half / 2},{-amplitude} {half},0 t{half},0 "
+        f"V{height} H0 Z"
+    )
+
+
+def banner(width, height, stops, title=None, subtitle=None, seconds=14):
+    """A gradient banner with two scrolling wave layers, replacing capsule-render."""
+    gid = f"g{abs(hash(tuple(stops))) % 10000}"
+    stop_tags = "\n      ".join(
+        f'<stop offset="{off}%" stop-color="{color}"/>' for off, color in stops
+    )
+
+    layers = []
+    for opacity, amp, base, speed in ((0.18, 16, height * 0.62, seconds), (0.30, 11, height * 0.78, seconds * 0.7)):
+        path = wave_path(width, height, base, amp)
+        layers.append(
+            f"""<g opacity="{opacity}">
+      <g>
+        <path d="{path}" fill="#ffffff"/>
+        <path d="{path}" fill="#ffffff" transform="translate({width},0)"/>
+        <animateTransform attributeName="transform" type="translate"
+          from="0,0" to="{-width},0" dur="{speed}s" repeatCount="indefinite"/>
+      </g>
+    </g>"""
+        )
+
+    text = ""
+    if title:
+        ty = height * 0.44 if subtitle else height * 0.56
+        text += (
+            f'<text x="{width / 2}" y="{ty}" text-anchor="middle" '
+            f'font-family="{FONT}" font-size="46" font-weight="700" fill="#ffffff">{esc(title)}</text>'
+        )
+    if subtitle:
+        text += (
+            f'\n  <text x="{width / 2}" y="{height * 0.66}" text-anchor="middle" '
+            f'font-family="{FONT}" font-size="19" font-weight="400" fill="#ffffff" '
+            f'fill-opacity="0.88">{esc(subtitle)}</text>'
+        )
+
+    return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}"
+     xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="{gid}" x1="0" y1="0" x2="1" y2="0">
+      {stop_tags}
+    </linearGradient>
+  </defs>
+  <rect width="{width}" height="{height}" fill="url(#{gid})"/>
+  {"".join(layers)}
+  {text}
+</svg>
+"""
+
+
 def main():
     viewer = fetch()
     repos = viewer["repositories"]["nodes"]
@@ -160,7 +217,18 @@ def main():
     ASSETS.mkdir(exist_ok=True)
     (ASSETS / "github-stats.svg").write_text(overview_card(stats))
     (ASSETS / "top-languages.svg").write_text(language_card(ranked, total))
-    print(f"wrote 2 cards to {ASSETS}")
+    (ASSETS / "header.svg").write_text(
+        banner(
+            1000, 200,
+            [(0, "#8A2BE2"), (50, "#4169E1"), (100, "#00CED1")],
+            title="Amit Kumar Maurya",
+            subtitle="AI Evaluation Specialist & Benchmark Engineer",
+        )
+    )
+    (ASSETS / "footer.svg").write_text(
+        banner(1000, 120, [(0, "#00CED1"), (50, "#4169E1"), (100, "#8A2BE2")])
+    )
+    print(f"wrote 4 assets to {ASSETS}")
     print(stats)
 
 

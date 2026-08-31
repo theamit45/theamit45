@@ -1,4 +1,4 @@
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:8A2BE2,50:4169E1,100:00CED1&height=200&section=header&text=Amit%20Kumar%20Maurya&fontSize=52&fontColor=ffffff&fontAlignY=36&desc=AI%20Evaluation%20Specialist%20%26%20Benchmark%20Engineer&descSize=20&descAlignY=58&animation=fadeIn" />
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/header.svg" alt="Amit Kumar Maurya, AI Evaluation Specialist and Benchmark Engineer" />
 
 <div align="center">
 
@@ -240,4 +240,4 @@ Relevant coursework: Data Structures & Algorithms, Operating Systems, Object Ori
 
 </div>
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:00CED1,50:4169E1,100:8A2BE2&height=120&section=footer" />
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/footer.svg" alt="" />
