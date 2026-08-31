@@ -12,6 +12,10 @@
 <a href="https://github.com/theamit45?tab=followers"><img src="https://img.shields.io/github/followers/theamit45?label=Followers&style=for-the-badge&color=4169E1&labelColor=1a1b27" alt="followers" /></a>
 <img src="https://img.shields.io/badge/Focus-AI%20Evaluation-00CED1?style=for-the-badge&labelColor=1a1b27" alt="focus" />
 
+<br/><br/>
+
+<img src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/terminal.svg" alt="A terminal session running a Terminal-Bench task: the oracle solution scores 1.0, the nop baseline scores 0.0, and the agent fails" />
+
 </div>
 
 ---
