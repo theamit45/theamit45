@@ -764,41 +764,65 @@ def wave_path(width, height, baseline, amplitude):
     return f"M0,{baseline} q{half / 2},{-amplitude} {half},0 t{half},0 V{height} H0 Z"
 
 
-# Material "email" and the LinkedIn wordmark, both authored on a 24x24 grid.
-MAIL_PATH = (
-    "M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
-    "m0 4l-8 5-8-5V6l8 5 8-5v2z"
-)
-LINKEDIN_PATH = (
-    "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 "
-    "2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 "
-    "4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 "
-    "2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 "
-    "13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 "
-    "24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"
-)
+# --------------------------------------------------------------------------
+# contact pills
+# --------------------------------------------------------------------------
+# GitHub renders README images through <img>, and an <a> inside an SVG loaded
+# that way is inert. The only clickable unit is a whole image, so each contact
+# is emitted as its own pill that the README wraps in a real anchor.
+CONTACT_PILLS = [
+    ("email", "gmail", "amitmaurya7071@gmail.com", "#EA4335"),
+    ("linkedin", "linkedin", "in/amit-kumar-maurya", "#0A66C2"),
+    ("github", "github", "github.com/theamit45", "#C9D1D9"),
+    ("leetcode", "leetcode", "leetcode.com/u/theamit45", "#FFA116"),
+]
 
 
-def contact_row(width, y, items, size=17.0, font=15.0, gap=34.0):
-    """Icon plus label pairs centred on a banner. The labels are plain text
-    because an SVG loaded through <img> cannot carry working links, so the
-    clickable versions stay in the README's Connect section."""
-    scale = size / 24.0
-    widths = [size + 9 + len(text) * font * 0.52 for _, text in items]
-    x = (width - (sum(widths) + gap * (len(items) - 1))) / 2
-    out = []
-    for (path, text), w in zip(items, widths):
-        out.append(
-            f'<g transform="translate({x:.1f},{y - size + 3:.1f}) scale({scale:.4f})">'
-            f'<path d="{path}" fill="#ffffff" fill-opacity="0.95"/></g>'
-            f'<text x="{x + size + 9:.1f}" y="{y}" font-family="{FONT}" font-size="{font}" '
-            f'fill="#ffffff" fill-opacity="0.95">{esc(text)}</text>'
-        )
-        x += w + gap
-    return "".join(out)
+def simple_icon_path(name):
+    src = (ICON_DIR / f"si-{name}.svg").read_text()
+    return re.search(r'<path[^>]*\sd="([^"]+)"', src).group(1)
 
 
-def banner(width, height, stops, uid, title=None, subtitle=None, contact=None, seconds=14):
+def link_pill(label, colour, icon, uid, height=44.0):
+    font, glyph = 14.5, 18.0
+    pad_l, gap, pad_r = 17.0, 10.0, 19.0
+    width = pad_l + glyph + gap + len(label) * font * 0.545 + pad_r
+    r = height / 2
+    scale = glyph / 24.0
+    icon_y = (height - glyph) / 2
+
+    return f"""<svg width="{width:.0f}" height="{height:.0f}" viewBox="0 0 {width:.0f} {height:.0f}"
+     fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="{uid}f" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="{colour}" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="{colour}" stop-opacity="0.06"/>
+    </linearGradient>
+    <clipPath id="{uid}c">
+      <rect x="0" y="0" rx="{r}" width="{width:.0f}" height="{height:.0f}"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#{uid}c)">
+    <rect width="{width:.0f}" height="{height:.0f}" fill="{BG}"/>
+    <rect width="{width:.0f}" height="{height:.0f}" fill="url(#{uid}f)"/>
+    <rect x="{-width * 0.35:.0f}" y="{-height:.0f}" width="{width * 0.22:.0f}" height="{height * 3:.0f}"
+          fill="#ffffff" fill-opacity="0.07" transform="rotate(18)">
+      <animate attributeName="x" values="{-width * 0.5:.0f};{width * 1.25:.0f}"
+               dur="4.5s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <rect x="0.75" y="0.75" rx="{r - 0.75}" width="{width - 1.5:.1f}" height="{height - 1.5:.1f}"
+        fill="none" stroke="{colour}" stroke-opacity="0.55"/>
+  <g transform="translate({pad_l},{icon_y:.1f}) scale({scale:.4f})">
+    <path d="{icon}" fill="{colour}"/>
+  </g>
+  <text x="{pad_l + glyph + gap:.1f}" y="{height / 2 + font * 0.35:.1f}" font-family="{FONT}"
+        font-size="{font}" font-weight="600" fill="#e6edf3">{esc(label)}</text>
+</svg>
+"""
+
+
+def banner(width, height, stops, uid, title=None, subtitle=None, seconds=14):
     """A gradient banner with scrolling waves over the shared backdrop."""
     stop_tags = "\n      ".join(
         f'<stop offset="{off}%" stop-color="{color}"/>' for off, color in stops
@@ -828,14 +852,10 @@ def banner(width, height, stops, uid, title=None, subtitle=None, contact=None, s
     </rect>
   </g>"""
 
-    if contact and title:
-        title_y, sub_y, con_y = height * 0.38, height * 0.565, height * 0.775
-    elif contact:
-        title_y, sub_y, con_y = height * 0.40, height * 0.42, height * 0.74
-    elif title:
-        title_y, sub_y, con_y = (height * 0.44 if subtitle else height * 0.56), height * 0.66, 0
+    if title:
+        title_y, sub_y = (height * 0.44 if subtitle else height * 0.56), height * 0.66
     else:
-        title_y, sub_y, con_y = height * 0.56, height * 0.60, 0
+        title_y, sub_y = 0, height * 0.56
 
     # No entrance fades on the lettering. A browser will not advance an SMIL
     # timeline for an <img> it has not painted yet, so anything that starts at
@@ -852,8 +872,6 @@ def banner(width, height, stops, uid, title=None, subtitle=None, contact=None, s
             f'font-family="{FONT}" font-size="{19 if title else 21}" font-weight="400" fill="#ffffff" '
             f'fill-opacity="0.88">{esc(subtitle)}</text>'
         )
-    if contact:
-        text += f"\n  {contact_row(width, con_y, contact)}"
 
     return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}"
      xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -1016,23 +1034,18 @@ def main():
         "contributions.svg": contribution_card(fetch_calendar(CONTRIB_YEAR), CONTRIB_YEAR),
         "divider.svg": divider(),
         "header.svg": banner(
-            1000, 232, [(0, PURPLE), (50, BLUE), (100, CYAN)], "hdr",
+            1000, 200, [(0, PURPLE), (50, BLUE), (100, CYAN)], "hdr",
             title="Amit Kumar Maurya",
             subtitle="AI Evaluation Specialist & Benchmark Engineer",
-            contact=[
-                (MAIL_PATH, "amitmaurya7071@gmail.com"),
-                (LINKEDIN_PATH, "in/amit-kumar-maurya"),
-            ],
         ),
         "footer.svg": banner(
-            1000, 150, [(0, CYAN), (50, BLUE), (100, PURPLE)], "ftr",
+            1000, 130, [(0, CYAN), (50, BLUE), (100, PURPLE)], "ftr",
             subtitle="If it isn't tested, it doesn't work.",
-            contact=[
-                (MAIL_PATH, "amitmaurya7071@gmail.com"),
-                (LINKEDIN_PATH, "in/amit-kumar-maurya"),
-            ],
         ),
     }
+
+    for key, icon, label, colour in CONTACT_PILLS:
+        written[f"contact-{key}.svg"] = link_pill(label, colour, simple_icon_path(icon), f"p{key}")
 
     leetcode = fetch_leetcode()
     if leetcode:

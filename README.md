@@ -8,6 +8,11 @@
 
 <br/>
 
+<a href="mailto:amitmaurya7071@gmail.com" title="Email amitmaurya7071@gmail.com"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contact-email.svg" alt="Email amitmaurya7071@gmail.com" /></a>
+<a href="https://www.linkedin.com/in/amit-kumar-maurya-a2a244235/" title="Connect with Amit Kumar Maurya on LinkedIn"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contact-linkedin.svg" alt="LinkedIn, in/amit-kumar-maurya" /></a>
+
+<br/><br/>
+
 <img src="https://komarev.com/ghpvc/?username=theamit45&label=Profile%20Views&color=8A2BE2&style=for-the-badge" alt="profile views" />
 <a href="https://github.com/theamit45?tab=followers"><img src="https://img.shields.io/github/followers/theamit45?label=Followers&style=for-the-badge&color=4169E1&labelColor=1a1b27" alt="followers" /></a>
 <img src="https://img.shields.io/badge/Focus-AI%20Evaluation-00CED1?style=for-the-badge&labelColor=1a1b27" alt="focus" />
@@ -170,17 +175,17 @@ Relevant coursework: Data Structures & Algorithms, Operating Systems, Object Ori
 
 <div align="center">
 
-<a href="https://www.linkedin.com/in/amit-kumar-maurya-a2a244235/">
-  <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+<a href="mailto:amitmaurya7071@gmail.com" title="Email amitmaurya7071@gmail.com">
+  <img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contact-email.svg" alt="Email amitmaurya7071@gmail.com" />
 </a>
-<a href="mailto:amitmaurya7071@gmail.com">
-  <img src="https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" />
+<a href="https://www.linkedin.com/in/amit-kumar-maurya-a2a244235/" title="Connect with Amit Kumar Maurya on LinkedIn">
+  <img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contact-linkedin.svg" alt="LinkedIn, in/amit-kumar-maurya" />
 </a>
-<a href="https://leetcode.com/u/theamit45/">
-  <img src="https://img.shields.io/badge/LeetCode-FFA116?style=for-the-badge&logo=leetcode&logoColor=black" alt="LeetCode" />
+<a href="https://github.com/theamit45" title="Follow theamit45 on GitHub">
+  <img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contact-github.svg" alt="GitHub, github.com/theamit45" />
 </a>
-<a href="https://github.com/theamit45">
-  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+<a href="https://leetcode.com/u/theamit45/" title="theamit45 on LeetCode">
+  <img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contact-leetcode.svg" alt="LeetCode, leetcode.com/u/theamit45" />
 </a>
 
 <br/><br/>
@@ -189,4 +194,4 @@ Relevant coursework: Data Structures & Algorithms, Operating Systems, Object Ori
 
 </div>
 
-<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/footer.svg" alt="If it isn't tested, it doesn't work. amitmaurya7071@gmail.com and linkedin.com/in/amit-kumar-maurya" />
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/footer.svg" alt="If it isn't tested, it doesn't work." />
