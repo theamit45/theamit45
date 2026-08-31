@@ -39,6 +39,6 @@
     </rect>
   </g>
   </g>
-  <g opacity="1"><animate attributeName="opacity" values="0.0;0.0;1;1" keyTimes="0;0.0625;0.4375;1" dur="2.4s" fill="freeze"/><text x="500.0" y="88.0" text-anchor="middle" font-family="'Segoe UI', Ubuntu, Sans-Serif" font-size="46" font-weight="700" fill="#ffffff">Amit Kumar Maurya</text></g>
-  <g opacity="1"><animate attributeName="opacity" values="0.0;0.0;1;1" keyTimes="0;0.2500;0.6250;1" dur="2.4s" fill="freeze"/><text x="500.0" y="132.0" text-anchor="middle" font-family="'Segoe UI', Ubuntu, Sans-Serif" font-size="19" font-weight="400" fill="#ffffff" fill-opacity="0.88">AI Evaluation Specialist &amp; Benchmark Engineer</text></g>
+  <g opacity="1"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.0625;0.4375;1" dur="2.4s" fill="freeze"/><text x="500.0" y="88.0" text-anchor="middle" font-family="'Segoe UI', Ubuntu, Sans-Serif" font-size="46" font-weight="700" fill="#ffffff">Amit Kumar Maurya</text></g>
+  <g opacity="1"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.2500;0.6250;1" dur="2.4s" fill="freeze"/><text x="500.0" y="132.0" text-anchor="middle" font-family="'Segoe UI', Ubuntu, Sans-Serif" font-size="19" font-weight="400" fill="#ffffff" fill-opacity="0.88">AI Evaluation Specialist &amp; Benchmark Engineer</text></g>
 </svg>

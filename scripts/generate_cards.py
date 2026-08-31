@@ -107,17 +107,11 @@ def esc(text):
 # SMIL (reduced-motion settings, static renderers) still shows the content.
 ENTRANCE = 2.4
 
-# The tech panel is the biggest single image on the page, so it gets a shorter
-# reveal and starts partly visible. A large box that is blank for over a second
-# reads as a broken image, and the reveal is not worth that risk.
-ENTRANCE_FAST = 1.3
-RESTING_OPACITY = 0.2
 
-
-def fade_in(delay, dur=0.55, total=ENTRANCE, start=0.0):
+def fade_in(delay, dur=0.55, total=ENTRANCE):
     a, b = delay / total, min((delay + dur) / total, 1.0)
     return (
-        f'<animate attributeName="opacity" values="{start};{start};1;1" '
+        f'<animate attributeName="opacity" values="0;0;1;1" '
         f'keyTimes="0;{a:.4f};{b:.4f};1" dur="{total}s" fill="freeze"/>'
     )
 
@@ -282,31 +276,30 @@ def tech_panel(width=900):
     uid = "tp"
     defs, background = backdrop(width, int(height), uid)
 
+    # No one-shot reveal here. This is the largest image on the page, and a
+    # fade from zero means it renders as an empty box until the animation
+    # timeline advances, which browsers delay for images below the fold. The
+    # drifting backdrop and the floating tiles supply the motion instead, and
+    # both look correct on their very first frame.
     parts, y, index = [], top, 0
     for group_name, names in TECH_GROUPS:
         parts.append(
-            f'<g opacity="1">'
-            f"{fade_in(round(0.05 + index * 0.03, 2), 0.4, ENTRANCE_FAST, RESTING_OPACITY)}"
             f'<text x="{pad_x + 6}" y="{y + 13}" font-family="{FONT}" font-size="12" '
             f'font-weight="600" letter-spacing="1.6" fill="{TEXT}" '
-            f'fill-opacity="0.75">{esc(group_name.upper())}</text></g>'
+            f'fill-opacity="0.75">{esc(group_name.upper())}</text>'
         )
 
         row_y = y + label_h
         for col, name in enumerate(names):
             cx = pad_x + col * col_w + (col_w - tile_w) / 2
-            delay = round(0.08 + index * 0.032, 3)
             parts.append(
-                f'<g opacity="1">'
-                f"{fade_in(delay, 0.4, ENTRANCE_FAST, RESTING_OPACITY)}"
-                f"{slide_in(delay, 0, 6, 0.4, ENTRANCE_FAST)}"
                 f"<g>{bob(index * 0.42)}"
                 f'<rect x="{cx:.1f}" y="{row_y:.1f}" rx="12" width="{tile_w}" height="{tile_h}" '
                 f'fill="#20233a" fill-opacity="0.72" stroke="{BORDER}"/>'
                 f"{inline_icon(name, cx + (tile_w - icon_px) / 2, row_y + 13, icon_px)}"
                 f'<text x="{cx + tile_w / 2:.1f}" y="{row_y + 72:.1f}" text-anchor="middle" '
                 f'font-family="{FONT}" font-size="11.5" fill="{TEXT}">{esc(ICON_LABELS[name])}</text>'
-                f"</g></g>"
+                f"</g>"
             )
             index += 1
         y = row_y + tile_h + group_gap
