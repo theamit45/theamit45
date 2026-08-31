@@ -91,6 +91,16 @@ class AmitKumarMaurya:
 
 ---
 
+## Projects
+
+**MediAI** — an AI health assistant built on the MERN stack that explains without ever diagnosing. Every model response is parsed against a Zod schema and then passed through a deterministic rules engine that can only ever *raise* urgency, never lower it. If the text contains a stroke sign, the safety floor rewrites the assessment to `emergency` regardless of what the model concluded. It runs end to end with no API key via deterministic fixtures, so the test suite works offline in CI.
+
+**Travel Website** — a responsive web application for browsing destinations and booking trips, built with HTML, CSS and Node.js.
+
+**Covid-19 Tracker** — daily and weekly case statistics pulled from live API datasets and plotted on Google Maps, built with JavaScript, HTML and CSS.
+
+---
+
 ## DSA & Problem Solving
 
 <div align="center">
