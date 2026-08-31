@@ -162,8 +162,7 @@ The LeetCode numbers are pulled live from LeetCode's API by [`scripts/generate_c
 
 <div align="center">
 
-<img height="195" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/github-stats.svg" alt="GitHub overview" />
-<img height="195" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/top-languages.svg" alt="Most used languages" />
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/stats.svg" alt="GitHub overview: 60 total repositories, 58 private, 150+ Dynamo tasks shipped, 9 languages used, Python primary. Most used languages: Python 92.9%, Shell 2.9%, C 2.5%, TypeScript 0.7%, Dockerfile 0.5%, HTML 0.4%." />
 
 </div>
 

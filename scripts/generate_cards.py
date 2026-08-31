@@ -255,27 +255,6 @@ def sweep(width, height, uid, dur=7.0, opacity=0.07):
     )
 
 
-def frame(width, height, title, body, uid, title_delay=0.1):
-    defs, background = backdrop(width, height, uid)
-    return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    .title {{ font: 600 18px {FONT}; fill: {TITLE}; }}
-    .label {{ font: 400 14px {FONT}; fill: {TEXT}; }}
-    .value {{ font: 600 14px {FONT}; fill: {VALUE}; }}
-    .small {{ font: 400 12px {FONT}; fill: {TEXT}; }}
-  </style>
-  <defs>
-    {defs}
-  </defs>
-  {background}
-  <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1}" fill="none" stroke="{BORDER}"/>
-  <text x="25" y="35" class="title">{esc(title)}</text>
-  {body}
-  {sweep(width, height, uid, 8.5)}
-</svg>
-"""
-
-
 # --------------------------------------------------------------------------
 # tech logos
 # --------------------------------------------------------------------------
@@ -668,7 +647,19 @@ def contribution_card(cal, year, width=900):
 # --------------------------------------------------------------------------
 # cards
 # --------------------------------------------------------------------------
-def overview_card(stats):
+def stats_card(stats, langs, total, width=900, height=230):
+    """Overview and language split in one panel.
+
+    These used to be two images at fixed pixel widths, which left them the
+    only things on the page not scaling to the container. One 900 wide card
+    lines up with the DSA and contribution panels at any window size.
+    """
+    uid = "st"
+    defs, background = backdrop(width, height, uid)
+    gutter, mid = 26.0, width / 2
+    left_end = mid - 24
+    right_x, right_end = mid + 24, width - gutter
+
     rows = [
         ("Total Repositories", stats["repos"]),
         ("Private Repositories", stats["private"]),
@@ -676,43 +667,62 @@ def overview_card(stats):
         ("Languages Used", stats["languages"]),
         ("Primary Language", stats["primary"]),
     ]
-    body, y = [], 68
+    left = f'<text x="{gutter}" y="42" class="title">GitHub Overview</text>'
+    y = 82
     for label, value in rows:
-        body.append(
-            f'<text x="25" y="{y}" class="label">{esc(label)}</text>'
-            f'<text x="425" y="{y}" class="value" text-anchor="end">{esc(value)}</text>'
+        left += (
+            f'<text x="{gutter}" y="{y}" class="label">{esc(label)}</text>'
+            f'<text x="{left_end}" y="{y}" class="value" text-anchor="end">{esc(value)}</text>'
         )
-        y += 26
-    return frame(450, 195, "GitHub Overview", "\n  ".join(body), "ov")
+        y += 28
 
-
-def language_card(langs, total):
-    width, bar_x, bar_w = 350, 25, 300
     shown = langs[:6]
-
-    segments, x = [], bar_x
-    for name, size, color in shown:
+    bar_w = right_end - right_x
+    segments, x = [], right_x
+    for _name, size, color in shown:
         seg = max(bar_w * size / total, 1.5)
-        segments.append(f'<rect x="{x:.1f}" y="55" width="{seg:.1f}" height="10" fill="{color or "#858585"}"/>')
+        segments.append(
+            f'<rect x="{x:.1f}" y="64" width="{seg:.1f}" height="11" fill="{color or "#858585"}"/>'
+        )
         x += seg
-    if x < bar_x + bar_w:
-        segments.append(f'<rect x="{x:.1f}" y="55" width="{bar_x + bar_w - x:.1f}" height="10" fill="#858585"/>')
+    if x < right_end:
+        segments.append(
+            f'<rect x="{x:.1f}" y="64" width="{right_end - x:.1f}" height="11" fill="#858585"/>'
+        )
 
-    body = ["".join(segments)]
-
-    y = 95
+    right = (
+        f'<text x="{right_x}" y="42" class="title">Most Used Languages</text>'
+        f'<clipPath id="{uid}bar"><rect x="{right_x}" y="64" width="{bar_w}" height="11" rx="5.5"/></clipPath>'
+        f'<g clip-path="url(#{uid}bar)">{"".join(segments)}</g>'
+    )
+    col_w, y = bar_w / 2, 118
     for i, (name, size, color) in enumerate(shown):
-        col_x = bar_x if i % 2 == 0 else bar_x + 155
-        pct = 100 * size / total
-        body.append(
+        col_x = right_x + (0 if i % 2 == 0 else col_w)
+        right += (
             f'<circle cx="{col_x + 5}" cy="{y - 4}" r="5" fill="{color or "#858585"}"/>'
-            f'<text x="{col_x + 18}" y="{y}" class="small">{esc(name)} {pct:.1f}%</text>'
+            f'<text x="{col_x + 18}" y="{y}" class="small">{esc(name)} {100 * size / total:.1f}%</text>'
         )
         if i % 2 == 1:
-            y += 24
-    if len(shown) % 2 == 1:
-        y += 24
-    return frame(width, 195, "Most Used Languages", "\n  ".join(body), "lang")
+            y += 32
+
+    return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title {{ font: 600 18px {FONT}; fill: {TITLE}; }}
+    .label {{ font: 400 14px {FONT}; fill: {TEXT}; }}
+    .value {{ font: 600 14px {FONT}; fill: {VALUE}; }}
+    .small {{ font: 400 12.5px {FONT}; fill: {TEXT}; }}
+  </style>
+  <defs>
+    {defs}
+  </defs>
+  {background}
+  <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1}" fill="none" stroke="{BORDER}"/>
+  <line x1="{mid}" y1="30" x2="{mid}" y2="{height - 30}" stroke="{BORDER}" stroke-opacity="0.8"/>
+  {left}
+  {right}
+  {sweep(width, height, uid, 8.5)}
+</svg>
+"""
 
 
 # --------------------------------------------------------------------------
@@ -1002,8 +1012,7 @@ def main():
 
     ASSETS.mkdir(exist_ok=True)
     written = {
-        "github-stats.svg": overview_card(stats),
-        "top-languages.svg": language_card(ranked, total),
+        "stats.svg": stats_card(stats, ranked, total),
         "terminal.svg": terminal_svg(),
         "focus.svg": focus_panel(),
         "contributions.svg": contribution_card(fetch_calendar(CONTRIB_YEAR), CONTRIB_YEAR),
