@@ -1,9 +1,9 @@
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:8A2BE2,50:4169E1,100:00CED1&height=200&section=header&text=Amit%20Kumar%20Maurya&fontSize=52&fontColor=ffffff&fontAlignY=36&desc=Software%20Development%20Engineer%20—%20AI&descSize=20&descAlignY=58&animation=fadeIn" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:8A2BE2,50:4169E1,100:00CED1&height=200&section=header&text=Amit%20Kumar%20Maurya&fontSize=52&fontColor=ffffff&fontAlignY=36&desc=AI%20Evaluation%20Specialist%20%26%20Benchmark%20Engineer&descSize=20&descAlignY=58&animation=fadeIn" />
 
 <div align="center">
 
 <a href="https://git.io/typing-svg">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&duration=3000&pause=800&color=4169E1&center=true&vCenter=true&width=700&lines=AI+Benchmark+Engineer+%40+Xelron;Building+sandboxes+that+test+AI+coding+agents;350%2B+DSA+problems+solved;Python+%E2%80%A2+Docker+%E2%80%A2+React+%E2%80%A2+Node.js" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&duration=3000&pause=800&color=4169E1&center=true&vCenter=true&width=760&lines=LLM+Evaluation+Specialist+%40+Handshake+AI;Building+terminal+benchmarks+that+test+AI+agents;Project+Dynamo+%E2%80%A2+Terminal-Bench+%E2%80%A2+Docker;350%2B+DSA+problems+solved" alt="Typing SVG" />
 </a>
 
 <br/>
@@ -18,23 +18,79 @@
 
 ## About Me
 
-I'm a Computer Science engineer who works at the seam between **AI systems and rigorous testing**. My day job is building the environments that decide whether an AI coding agent is actually any good — isolated Docker sandboxes with fixed resource limits, Pytest suites that grade an agent's output automatically, and validation passes that prove a task scores `1.0` when solved and `0.0` when untouched.
+I'm a Computer Science engineer working at the seam between AI systems and rigorous testing. My work is building the environments that decide whether an AI coding agent is actually any good: isolated Docker sandboxes with fixed resource limits, Pytest suites that grade an agent's output automatically, and validation passes that prove a task scores `1.0` when solved and `0.0` when untouched.
 
-- Currently a **Software Development Engineer — AI** at **Xelron**, working on Harbor / Terminal-Bench
-- Also contributing to **RLHF pipelines** at **Outlier.ai**, stress-testing frontier models with adversarial prompts
+Most of what I do is adversarial in a useful way. I design tasks that look tractable and then find the reasoning step where a frontier model quietly falls over.
+
+- **LLM Evaluation Specialist** at **Handshake AI**, contributing to Project Dynamo
+- **Artificial Intelligence Engineer** at **AfterQuery Experts**
+- **AI & Frontier Trainer** at **Outlier**, working on RLHF pipelines
 - Solved **350+ DSA problems** across LeetCode, GeeksforGeeks, Coding Ninjas and CodeChef
 - Secured **10th rank** in Chase The Code 2.0
-- I care a lot about the unglamorous parts: edge cases, reproducibility, and claims backed by a specific diff line
 
 ```python
 class AmitKumarMaurya:
-    role     = "SDE — AI @ Xelron"
+    role      = "LLM Evaluation Specialist @ Handshake AI"
     education = "B.E. Computer Science, Chandigarh University"
-    stack    = ["Python", "Bash", "C++", "JavaScript", "React", "Node.js"]
-    tooling  = ["Docker", "Pytest", "Git", "Linux", "uv/uvx", "Ruff"]
-    focus    = "AI benchmark engineering & LLM evaluation"
-    motto    = "If it isn't tested, it doesn't work."
+    stack     = ["Python", "Bash", "C++", "JavaScript", "React", "Node.js"]
+    tooling   = ["Docker", "Pytest", "Git", "Linux", "uv/uvx", "Ruff"]
+    focus     = "AI benchmark engineering and LLM evaluation"
+    motto     = "If it isn't tested, it doesn't work."
 ```
+
+---
+
+## Where I Work
+
+| Role | Organisation | Period |
+|---|---|---|
+| LLM Evaluation Specialist | [Handshake AI](https://joinhandshake.com/ai/) · Freelance | Jun 2026 to Present |
+| Artificial Intelligence Engineer | AfterQuery Experts · Freelance | Apr 2026 to Present |
+| AI & Frontier Trainer | Outlier · Freelance | Nov 2024 to Present |
+| AI Software Engineer | Xelron · Full-time | Sep 2025 to May 2026 |
+
+---
+
+## Project Dynamo
+
+[Project Dynamo](https://project-dynamo.learn.joinhandshake.com/) is the coding and software engineering track of the **Handshake AI Fellowship**. The goal is to measure how well autonomous agents handle real terminal work rather than tidy code-generation prompts, and the tasks are scored against the **Terminal-Bench** benchmark.
+
+What I build for it:
+
+- **Command-line test environments** that require an agent to reason across multiple steps, not just emit a plausible-looking patch
+- **Repository repair and debugging scenarios**, where something is genuinely broken and the fix depends on reading the failure correctly
+- **Reproducible Docker images** with pinned dependencies, so a task grades identically on any machine
+- **Pytest verification suites** plus Oracle and NOP validation passes, confirming a task scores `1.0` when solved and `0.0` when left untouched
+- **Failure-mode analysis**, documenting exactly where a model's reasoning broke down so the benchmark gets harder in the right places
+
+I've shipped **43 task environments** so far, spread across fourteen domains:
+
+<div align="center">
+
+| Domain | Tasks | Domain | Tasks |
+|---|:--:|---|:--:|
+| Security | 7 | Build, Dependency & Release | 2 |
+| File & Media Operations | 6 | Data Science & Reporting | 2 |
+| Hardware, Embedded & Low-Level | 5 | Debugging & Repair | 2 |
+| Scientific Computing | 4 | Model Training & ML Infrastructure | 1 |
+| Data Processing & ETL | 3 | Regulated Knowledge Work | 1 |
+| Machine Learning & AI | 3 | | |
+| Mathematics & Formal Reasoning | 3 | | |
+| Systems Infrastructure & Operations | 3 | | |
+
+</div>
+
+Toolchain: `Docker` · `Python` · `Bash` · `Pytest` · `uv/uvx` · `TOML` · `Git` · `GitHub CLI` · `Ruff`
+
+---
+
+## Other Evaluation Work
+
+**AfterQuery Experts.** Building and reviewing evaluation data for large language models, with an emphasis on containerised reproducibility and multi-step engineering problems.
+
+**Outlier.** Contributing to RLHF pipelines by writing expert-level prompts and rating paired model outputs on structured rubrics. I design adversarial, reasoning-heavy prompts to stress-test robustness across edge cases and ambiguous inputs, and every claim I submit is backed by a specific diff line.
+
+**Xelron (previous).** Built Harbor and Terminal-Bench sandbox challenges covering debugging, system administration and data processing. Also ran the Marlin evaluation workflow, reviewing AI-generated code changes line by line against the original codebase and comparing two model responses side by side across multiple turns.
 
 ---
 
@@ -50,6 +106,7 @@ class AmitKumarMaurya:
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Bash](https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)
+![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
@@ -75,7 +132,8 @@ class AmitKumarMaurya:
 
 ![Prompt Engineering](https://img.shields.io/badge/Prompt%20Engineering-8A2BE2?style=for-the-badge&logoColor=white)
 ![LLM Evaluation](https://img.shields.io/badge/LLM%20Evaluation-4169E1?style=for-the-badge&logoColor=white)
-![RLHF](https://img.shields.io/badge/RLHF-00CED1?style=for-the-badge&logoColor=white)
+![Terminal-Bench](https://img.shields.io/badge/Terminal--Bench-00CED1?style=for-the-badge&logoColor=white)
+![RLHF](https://img.shields.io/badge/RLHF-16A085?style=for-the-badge&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/GPT--5-412991?style=for-the-badge&logo=openai&logoColor=white)
 ![Claude](https://img.shields.io/badge/Claude%20Sonnet-D97757?style=for-the-badge&logo=anthropic&logoColor=white)
 
@@ -83,21 +141,13 @@ class AmitKumarMaurya:
 
 ---
 
-## What I'm Working On
-
-**Harbor / Terminal-Bench** — sandbox challenges that measure whether AI models can solve real-world coding tasks: debugging, system administration, and data processing, all inside isolated Docker containers with fixed resource limits. I write the Dockerfiles, TOML configs, task instructions, and reference solutions, then build the Pytest suites that verify an agent's answer automatically.
-
-**Marlin / Evaluation Workflow** — reviewing AI-generated code changes by reading Git diffs line by line against the original codebase, comparing two model responses side by side across multiple turns, and writing follow-up prompts that build on previous outputs.
-
----
-
 ## Projects
 
-**MediAI** — an AI health assistant built on the MERN stack that explains without ever diagnosing. Every model response is parsed against a Zod schema and then passed through a deterministic rules engine that can only ever *raise* urgency, never lower it. If the text contains a stroke sign, the safety floor rewrites the assessment to `emergency` regardless of what the model concluded. It runs end to end with no API key via deterministic fixtures, so the test suite works offline in CI.
+**MediAI.** An AI health assistant built on the MERN stack that explains without ever diagnosing. Every model response is parsed against a Zod schema and then passed through a deterministic rules engine that can only ever raise urgency, never lower it. If the text contains a stroke sign, the safety floor rewrites the assessment to `emergency` regardless of what the model concluded. It runs end to end with no API key via deterministic fixtures, so the test suite works offline in CI.
 
-**Travel Website** — a responsive web application for browsing destinations and booking trips, built with HTML, CSS and Node.js.
+**Travel Website.** A responsive web application for browsing destinations and booking trips, built with HTML, CSS and Node.js.
 
-**Covid-19 Tracker** — daily and weekly case statistics pulled from live API datasets and plotted on Google Maps, built with JavaScript, HTML and CSS.
+**Covid-19 Tracker.** Daily and weekly case statistics pulled from live API datasets and plotted on Google Maps, built with JavaScript, HTML and CSS.
 
 ---
 
@@ -161,15 +211,16 @@ class AmitKumarMaurya:
 |---|---|
 | **10th Rank** | Chase The Code 2.0 |
 | **350+ Problems** | Data Structures & Algorithms across four platforms |
-| **Elite Certificate** | Discrete Mathematics — NPTEL, IIT Madras |
-| **Silver Certificate** | Programming in Java — NPTEL, IIT Kharagpur |
-| **Silver Certificate** | Introduction to IoT — NPTEL, IIT Kharagpur |
+| **43 Task Environments** | Shipped for Project Dynamo across fourteen domains |
+| **Elite Certificate** | Discrete Mathematics, NPTEL, IIT Madras |
+| **Silver Certificate** | Programming in Java, NPTEL, IIT Kharagpur |
+| **Silver Certificate** | Introduction to IoT, NPTEL, IIT Kharagpur |
 
 ---
 
 ## Education
 
-**Bachelor of Engineering, Computer Science and Engineering** · 2021 – 2025
+**Bachelor of Engineering, Computer Science and Engineering** · 2021 to 2025
 Chandigarh University, Gharuan, Punjab · CGPA 7.93
 
 Relevant coursework: Data Structures & Algorithms, Operating Systems, Object Oriented Programming, Database Management Systems
