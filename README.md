@@ -166,7 +166,7 @@ The LeetCode numbers are pulled live from LeetCode's API by [`scripts/generate_c
 
 </div>
 
-These cards are generated from the GitHub API by [`scripts/generate_cards.py`](scripts/generate_cards.py) and committed to this repository, so they include private repositories and never depend on a third-party service staying up.
+This panel is generated from the GitHub API by [`scripts/generate_cards.py`](scripts/generate_cards.py) and committed to this repository, so it counts private repositories and never depends on a third-party service staying up.
 
 <img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/divider.svg" alt="" />
 
