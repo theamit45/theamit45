@@ -1,0 +1,28 @@
+<svg width="350" height="195" viewBox="0 0 350 195" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: #4169E1; }
+    .label { font: 400 14px 'Segoe UI', Ubuntu, Sans-Serif; fill: #a9b1d6; }
+    .value { font: 600 14px 'Segoe UI', Ubuntu, Sans-Serif; fill: #00CED1; }
+    .small { font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: #a9b1d6; }
+  </style>
+  <rect x="0.5" y="0.5" rx="8" width="349" height="194" fill="#1a1b27" stroke="#2f3352"/>
+  <text x="25" y="35" class="title">Most Used Languages</text>
+  <rect x="25.0" y="55" width="278.5" height="10" fill="#3572A5"/>
+  <rect x="303.5" y="55" width="8.7" height="10" fill="#89e051"/>
+  <rect x="312.1" y="55" width="7.6" height="10" fill="#555555"/>
+  <rect x="319.7" y="55" width="2.3" height="10" fill="#3178c6"/>
+  <rect x="322.0" y="55" width="1.5" height="10" fill="#384d54"/>
+  <rect x="323.5" y="55" width="1.5" height="10" fill="#e34c26"/>
+  <circle cx="30" cy="91" r="5" fill="#3572A5"/>
+  <text x="43" y="95" class="small">Python 92.8%</text>
+  <circle cx="185" cy="91" r="5" fill="#89e051"/>
+  <text x="198" y="95" class="small">Shell 2.9%</text>
+  <circle cx="30" cy="115" r="5" fill="#555555"/>
+  <text x="43" y="119" class="small">C 2.5%</text>
+  <circle cx="185" cy="115" r="5" fill="#3178c6"/>
+  <text x="198" y="119" class="small">TypeScript 0.8%</text>
+  <circle cx="30" cy="139" r="5" fill="#384d54"/>
+  <text x="43" y="143" class="small">Dockerfile 0.5%</text>
+  <circle cx="185" cy="139" r="5" fill="#e34c26"/>
+  <text x="198" y="143" class="small">HTML 0.4%</text>
+</svg>

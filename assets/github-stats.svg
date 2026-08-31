@@ -1,0 +1,20 @@
+<svg width="450" height="195" viewBox="0 0 450 195" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: #4169E1; }
+    .label { font: 400 14px 'Segoe UI', Ubuntu, Sans-Serif; fill: #a9b1d6; }
+    .value { font: 600 14px 'Segoe UI', Ubuntu, Sans-Serif; fill: #00CED1; }
+    .small { font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: #a9b1d6; }
+  </style>
+  <rect x="0.5" y="0.5" rx="8" width="449" height="194" fill="#1a1b27" stroke="#2f3352"/>
+  <text x="25" y="35" class="title">GitHub Overview</text>
+  <text x="25" y="68" class="label">Total Repositories</text>
+  <text x="425" y="68" class="value" text-anchor="end">60</text>
+  <text x="25" y="94" class="label">Private Repositories</text>
+  <text x="425" y="94" class="value" text-anchor="end">58</text>
+  <text x="25" y="120" class="label">Dynamo Task Environments</text>
+  <text x="425" y="120" class="value" text-anchor="end">43</text>
+  <text x="25" y="146" class="label">Languages Used</text>
+  <text x="425" y="146" class="value" text-anchor="end">9</text>
+  <text x="25" y="172" class="label">Primary Language</text>
+  <text x="425" y="172" class="value" text-anchor="end">Python</text>
+</svg>

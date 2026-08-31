@@ -172,28 +172,18 @@ Toolchain: `Docker` · `Python` · `Bash` · `Pytest` · `uv/uvx` · `TOML` · `
 
 <div align="center">
 
-<img height="165" src="https://github-readme-stats.vercel.app/api?username=theamit45&show_icons=true&include_all_commits=true&count_private=true&hide_border=true&theme=tokyonight&bg_color=1a1b27&title_color=4169E1&icon_color=00CED1" alt="GitHub stats" />
-<img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=theamit45&layout=compact&langs_count=8&hide_border=true&theme=tokyonight&bg_color=1a1b27&title_color=4169E1" alt="Top languages" />
-
-<br/><br/>
-
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=theamit45&hide_border=true&theme=tokyonight&background=1a1b27&ring=4169E1&fire=00CED1&currStreakLabel=4169E1" alt="Streak stats" />
-
-<br/><br/>
-
-<img src="https://github-profile-trophy.vercel.app/?username=theamit45&theme=tokyonight&no-frame=true&no-bg=true&column=7&margin-w=8&margin-h=8" alt="Trophies" />
+<img height="195" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/github-stats.svg" alt="GitHub overview" />
+<img height="195" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/top-languages.svg" alt="Most used languages" />
 
 </div>
+
+These cards are generated from the GitHub API by [`scripts/generate_cards.py`](scripts/generate_cards.py) and committed to this repository, so they include private repositories and never depend on a third-party service staying up.
 
 ---
 
 ## Contribution Graph
 
 <div align="center">
-
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=theamit45&bg_color=1a1b27&color=4169E1&line=00CED1&point=8A2BE2&area=true&hide_border=true" alt="Activity graph" />
-
-<br/>
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/theamit45/theamit45/output/github-snake-dark.svg" />
