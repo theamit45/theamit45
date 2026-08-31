@@ -91,22 +91,7 @@ Toolchain: `Docker` · `Python` · `Bash` · `Pytest` · `uv/uvx` · `TOML` · `
 
 <br/>
 
-**Also working with**
-
-![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Ruff](https://img.shields.io/badge/Ruff-D7FF64?style=for-the-badge&logo=ruff&logoColor=black)
-![TOML](https://img.shields.io/badge/TOML-9C4121?style=for-the-badge&logo=toml&logoColor=white)
-![uv](https://img.shields.io/badge/uv%2Fuvx-DE5FE9?style=for-the-badge&logo=astral&logoColor=white)
-![Cursor](https://img.shields.io/badge/Cursor-000000?style=for-the-badge&logo=cursor&logoColor=white)
-
-**AI & LLM Systems**
-
-![Prompt Engineering](https://img.shields.io/badge/Prompt%20Engineering-8A2BE2?style=for-the-badge&logoColor=white)
-![LLM Evaluation](https://img.shields.io/badge/LLM%20Evaluation-4169E1?style=for-the-badge&logoColor=white)
-![Terminal-Bench](https://img.shields.io/badge/Terminal--Bench-00CED1?style=for-the-badge&logoColor=white)
-![RLHF](https://img.shields.io/badge/RLHF-16A085?style=for-the-badge&logoColor=white)
-![OpenAI](https://img.shields.io/badge/GPT--5-412991?style=for-the-badge&logo=openai&logoColor=white)
-![Claude](https://img.shields.io/badge/Claude%20Sonnet-D97757?style=for-the-badge&logo=anthropic&logoColor=white)
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/focus.svg" alt="Also working with SQL, Ruff, TOML, uv and uvx, Zod and Cursor. AI and LLM systems: prompt engineering, LLM evaluation, Terminal-Bench, RLHF, failure-mode analysis, agent sandboxing, GPT-5 and Claude Sonnet." />
 
 </div>
 
@@ -156,13 +141,11 @@ These cards are generated from the GitHub API by [`scripts/generate_cards.py`](s
 
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/theamit45/theamit45/output/github-snake-dark.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/theamit45/theamit45/output/github-snake.svg" />
-  <img alt="Contribution snake animation" src="https://raw.githubusercontent.com/theamit45/theamit45/output/github-snake.svg" />
-</picture>
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/contributions.svg" alt="Contribution heatmap for 2023 showing 1,281 contributions, with a peak of 11 in a single day" />
 
 </div>
+
+This heatmap is built straight from the GitHub contributions API by [`scripts/generate_cards.py`](scripts/generate_cards.py) and committed here, so it stays accurate regardless of what the profile page decides to display.
 
 <img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/divider.svg" alt="" />
 

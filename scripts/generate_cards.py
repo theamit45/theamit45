@@ -60,12 +60,12 @@ QUERY = """
 """
 
 
-def fetch():
+def gql(query):
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if token:
         req = Request(
             "https://api.github.com/graphql",
-            data=json.dumps({"query": QUERY}).encode(),
+            data=json.dumps({"query": query}).encode(),
             headers={
                 "Authorization": f"bearer {token}",
                 "Content-Type": "application/json",
@@ -76,14 +76,28 @@ def fetch():
             payload = json.load(resp)
     else:
         out = subprocess.run(
-            ["gh", "api", "graphql", "-f", f"query={QUERY}"],
+            ["gh", "api", "graphql", "-f", f"query={query}"],
             capture_output=True, text=True, check=True,
         ).stdout
         payload = json.loads(out)
 
     if "errors" in payload:
         sys.exit(f"GraphQL error: {payload['errors']}")
-    return payload["data"]["viewer"]
+    return payload["data"]
+
+
+def fetch():
+    return gql(QUERY)["viewer"]
+
+
+def fetch_calendar(year):
+    query = (
+        "{ viewer { contributionsCollection("
+        f'from: "{year}-01-01T00:00:00Z", to: "{year}-12-31T23:59:59Z"'
+        ") { contributionCalendar { totalContributions weeks {"
+        " contributionDays { date contributionCount weekday } } } } } }"
+    )
+    return gql(query)["viewer"]["contributionsCollection"]["contributionCalendar"]
 
 
 def esc(text):
@@ -185,6 +199,22 @@ def backdrop(width, height, uid, rx=10):
     <rect width="{width}" height="{height}" fill="url(#{uid}grid)"/>
   </g>"""
     return defs, background
+
+
+def sweep(width, height, uid, dur=7.0, opacity=0.07):
+    """A translucent band crossing the card on a loop.
+
+    Safe in a way a one-shot reveal is not: the content underneath is fully
+    drawn at every frame, the band only adds a highlight on top. Reuses the
+    clip path that backdrop() defines for the same uid.
+    """
+    return (
+        f'<g clip-path="url(#{uid}clip)" opacity="{opacity}">'
+        f'<rect x="{-width * 0.35:.0f}" y="{-height:.0f}" width="{width * 0.13:.0f}" '
+        f'height="{height * 3:.0f}" fill="#ffffff" transform="rotate(14)">'
+        f'<animate attributeName="x" values="{-width * 0.5:.0f};{width * 1.25:.0f}" '
+        f'dur="{dur}s" repeatCount="indefinite"/></rect></g>'
+    )
 
 
 def frame(width, height, title, body, uid, title_delay=0.1):
@@ -293,7 +323,7 @@ def tech_panel(width=900):
         for col, name in enumerate(names):
             cx = pad_x + col * col_w + (col_w - tile_w) / 2
             parts.append(
-                f"<g>{bob(index * 0.42)}"
+                f"<g>{bob(index * 0.37, 3.0 + index % 3, 4.2 + (index % 4) * 0.55)}"
                 f'<rect x="{cx:.1f}" y="{row_y:.1f}" rx="12" width="{tile_w}" height="{tile_h}" '
                 f'fill="#20233a" fill-opacity="0.72" stroke="{BORDER}"/>'
                 f"{inline_icon(name, cx + (tile_w - icon_px) / 2, row_y + 13, icon_px)}"
@@ -311,6 +341,191 @@ def tech_panel(width=900):
   {background}
   <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1:.0f}" fill="none" stroke="{BORDER}"/>
   {"".join(parts)}
+  {sweep(width, int(height), uid, 9.0)}
+</svg>
+"""
+
+
+# --------------------------------------------------------------------------
+# focus chips
+# --------------------------------------------------------------------------
+# Things with no logo in devicon, so they are drawn as accent-coloured chips
+# rather than shoehorned into the icon grid.
+FOCUS_GROUPS = [
+    ("Also Working With", [
+        ("SQL", "#4479A1"), ("Ruff", "#D7FF64"), ("TOML", "#C75B39"),
+        ("uv / uvx", "#DE5FE9"), ("Zod", "#3E67B1"), ("Cursor", "#c9d1d9"),
+    ]),
+    ("AI and LLM Systems", [
+        ("Prompt Engineering", PURPLE), ("LLM Evaluation", BLUE),
+        ("Terminal-Bench", CYAN), ("RLHF", "#16A085"),
+        ("Failure-mode Analysis", "#F0883E"), ("Agent Sandboxing", "#8957E5"),
+        ("GPT-5", "#10A37F"), ("Claude Sonnet", "#D97757"),
+    ]),
+]
+
+CHIP_H = 34.0
+CHIP_FONT = 13.0
+
+
+def _chip_width(label):
+    # Segoe UI advances roughly 0.545 em for mixed-case text. This only needs
+    # to be close, since the chip is padded on both sides.
+    return 30 + len(label) * CHIP_FONT * 0.545 + 18
+
+
+def _flow(items, max_w, gap=10.0):
+    rows, cur, cur_w = [], [], 0.0
+    for label, color in items:
+        w = _chip_width(label)
+        if cur and cur_w + gap + w > max_w:
+            rows.append((cur, cur_w))
+            cur, cur_w = [], 0.0
+        cur_w += (gap if cur else 0) + w
+        cur.append((label, color, w))
+    if cur:
+        rows.append((cur, cur_w))
+    return rows
+
+
+def focus_panel(width=900):
+    pad_x, gap, row_gap, group_gap, label_h = 26.0, 10.0, 12.0, 24.0, 22.0
+    max_w = width - pad_x * 2
+
+    laid, y = [], 22.0
+    for group_name, items in FOCUS_GROUPS:
+        laid.append(("label", group_name, y))
+        y += label_h
+        for row, row_w in _flow(items, max_w, gap):
+            laid.append(("row", (row, row_w), y))
+            y += CHIP_H + row_gap
+        y += group_gap - row_gap
+    height = y - group_gap + row_gap + 8
+
+    uid = "fp"
+    defs, background = backdrop(width, int(height), uid)
+
+    parts, index = [], 0
+    for kind, payload, yy in laid:
+        if kind == "label":
+            parts.append(
+                f'<text x="{pad_x + 6}" y="{yy + 13}" font-family="{FONT}" font-size="12" '
+                f'font-weight="600" letter-spacing="1.6" fill="{TEXT}" '
+                f'fill-opacity="0.75">{esc(payload.upper())}</text>'
+            )
+            continue
+
+        row, row_w = payload
+        x = (width - row_w) / 2
+        for label, color, w in row:
+            parts.append(
+                f"<g>{bob(index * 0.31, 2.4 + index % 3, 4.4 + (index % 5) * 0.4)}"
+                f'<rect x="{x:.1f}" y="{yy:.1f}" rx="{CHIP_H / 2}" width="{w:.1f}" height="{CHIP_H}" '
+                f'fill="{color}" fill-opacity="0.13" stroke="{color}" stroke-opacity="0.55"/>'
+                f'<circle cx="{x + 17:.1f}" cy="{yy + CHIP_H / 2:.1f}" r="4.5" fill="{color}"/>'
+                f'<text x="{x + 30:.1f}" y="{yy + CHIP_H / 2 + 4.6:.1f}" font-family="{FONT}" '
+                f'font-size="{CHIP_FONT}" font-weight="600" fill="#e6edf3">{esc(label)}</text>'
+                f"</g>"
+            )
+            x += w + gap
+            index += 1
+
+    return f"""<svg width="{width}" height="{height:.0f}" viewBox="0 0 {width} {height:.0f}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    {defs}
+  </defs>
+  {background}
+  <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1:.0f}" fill="none" stroke="{BORDER}"/>
+  {"".join(parts)}
+  {sweep(width, int(height), uid, 10.0)}
+</svg>
+"""
+
+
+# --------------------------------------------------------------------------
+# contribution heatmap
+# --------------------------------------------------------------------------
+CONTRIB_YEAR = 2023
+HEAT = ["#1c2040", "#2f3d78", "#3A5CB8", "#4169E1", "#00CED1"]
+MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def contribution_card(cal, year, width=900):
+    weeks = cal["weeks"]
+    total = cal["totalContributions"]
+    cell, gap = 12, 3
+    pitch = cell + gap
+    left, top = 62, 78
+    grid_bottom = top + 7 * pitch - gap
+    height = grid_bottom + 50
+
+    counts = [d["contributionCount"] for w in weeks for d in w["contributionDays"]]
+    peak = max(counts) if counts else 1
+
+    def level(count):
+        if count <= 0:
+            return 0
+        ratio = count / peak
+        for i, edge in enumerate((0.15, 0.35, 0.65)):
+            if ratio <= edge:
+                return i + 1
+        return 4
+
+    uid = "cg"
+    defs, background = backdrop(width, int(height), uid)
+
+    cells, month_labels, prev_month = [], [], None
+    for wi, week in enumerate(weeks):
+        x = left + wi * pitch
+        for day in week["contributionDays"]:
+            y = top + day["weekday"] * pitch
+            cells.append(
+                f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="2.5" '
+                f'fill="{HEAT[level(day["contributionCount"])]}"/>'
+            )
+        month = week["contributionDays"][0]["date"][5:7]
+        if month != prev_month:
+            prev_month = month
+            month_labels.append(
+                f'<text x="{x}" y="{top - 11}" font-family="{FONT}" font-size="11" '
+                f'fill="{TEXT}" fill-opacity="0.8">{MONTHS[int(month) - 1]}</text>'
+            )
+
+    weekdays = "".join(
+        f'<text x="{left - 12}" y="{top + row * pitch + 10}" text-anchor="end" '
+        f'font-family="{FONT}" font-size="10.5" fill="{TEXT}" fill-opacity="0.7">{name}</text>'
+        for row, name in ((1, "Mon"), (3, "Wed"), (5, "Fri"))
+    )
+
+    legend_x = width - 26 - 5 * 17 - 74
+    legend = (
+        f'<text x="{legend_x}" y="{grid_bottom + 26}" font-family="{FONT}" font-size="11" '
+        f'fill="{TEXT}" fill-opacity="0.75">Less</text>'
+    )
+    for i, colour in enumerate(HEAT):
+        legend += (
+            f'<rect x="{legend_x + 32 + i * 17}" y="{grid_bottom + 16}" width="12" height="12" '
+            f'rx="2.5" fill="{colour}"/>'
+        )
+    legend += (
+        f'<text x="{legend_x + 32 + 5 * 17 + 6}" y="{grid_bottom + 26}" font-family="{FONT}" '
+        f'font-size="11" fill="{TEXT}" fill-opacity="0.75">More</text>'
+    )
+
+    return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    {defs}
+  </defs>
+  {background}
+  <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1}" fill="none" stroke="{BORDER}"/>
+  <text x="26" y="34" font-family="{FONT}" font-size="18" font-weight="600" fill="{TITLE}">{total:,} contributions in {year}</text>
+  <text x="26" y="54" font-family="{FONT}" font-size="12" fill="{TEXT}" fill-opacity="0.8">Peak day: {peak} contributions</text>
+  {"".join(month_labels)}
+  {weekdays}
+  {"".join(cells)}
+  {legend}
+  {sweep(width, height, uid, 8.0, 0.09)}
 </svg>
 """
 
@@ -590,6 +805,8 @@ def main():
         "top-languages.svg": language_card(ranked, total),
         "terminal.svg": terminal_svg(),
         "tech-stack.svg": tech_panel(),
+        "focus.svg": focus_panel(),
+        "contributions.svg": contribution_card(fetch_calendar(CONTRIB_YEAR), CONTRIB_YEAR),
         "divider.svg": divider(),
         "header.svg": banner(
             1000, 200, [(0, PURPLE), (50, BLUE), (100, CYAN)], "hdr",
