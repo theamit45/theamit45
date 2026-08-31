@@ -11,8 +11,8 @@
   <text x="425" y="68" class="value" text-anchor="end">60</text>
   <text x="25" y="94" class="label">Private Repositories</text>
   <text x="425" y="94" class="value" text-anchor="end">58</text>
-  <text x="25" y="120" class="label">Dynamo Task Environments</text>
-  <text x="425" y="120" class="value" text-anchor="end">43</text>
+  <text x="25" y="120" class="label">Dynamo Tasks Shipped</text>
+  <text x="425" y="120" class="value" text-anchor="end">150+</text>
   <text x="25" y="146" class="label">Languages Used</text>
   <text x="425" y="146" class="value" text-anchor="end">9</text>
   <text x="25" y="172" class="label">Primary Language</text>

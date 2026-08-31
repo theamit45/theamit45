@@ -63,22 +63,7 @@ What I build for it:
 - **Pytest verification suites** plus Oracle and NOP validation passes, confirming a task scores `1.0` when solved and `0.0` when left untouched
 - **Failure-mode analysis**, documenting exactly where a model's reasoning broke down so the benchmark gets harder in the right places
 
-I've shipped **43 task environments** so far, spread across fourteen domains:
-
-<div align="center">
-
-| Domain | Tasks | Domain | Tasks |
-|---|:--:|---|:--:|
-| Security | 7 | Build, Dependency & Release | 2 |
-| File & Media Operations | 6 | Data Science & Reporting | 2 |
-| Hardware, Embedded & Low-Level | 5 | Debugging & Repair | 2 |
-| Scientific Computing | 4 | Model Training & ML Infrastructure | 1 |
-| Data Processing & ETL | 3 | Regulated Knowledge Work | 1 |
-| Machine Learning & AI | 3 | | |
-| Mathematics & Formal Reasoning | 3 | | |
-| Systems Infrastructure & Operations | 3 | | |
-
-</div>
+I've shipped **150+ tasks** in total, spanning security, low-level and embedded systems, scientific computing, data processing and ETL, machine learning infrastructure, formal reasoning, and systems administration.
 
 Toolchain: `Docker` · `Python` · `Bash` · `Pytest` · `uv/uvx` · `TOML` · `Git` · `GitHub CLI` · `Ruff`
 
@@ -201,7 +186,7 @@ These cards are generated from the GitHub API by [`scripts/generate_cards.py`](s
 |---|---|
 | **10th Rank** | Chase The Code 2.0 |
 | **350+ Problems** | Data Structures & Algorithms across four platforms |
-| **43 Task Environments** | Shipped for Project Dynamo across fourteen domains |
+| **150+ Tasks** | Shipped for Project Dynamo against the Terminal-Bench benchmark |
 | **Elite Certificate** | Discrete Mathematics, NPTEL, IIT Madras |
 | **Silver Certificate** | Programming in Java, NPTEL, IIT Kharagpur |
 | **Silver Certificate** | Introduction to IoT, NPTEL, IIT Kharagpur |

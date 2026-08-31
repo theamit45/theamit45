@@ -27,6 +27,10 @@ TEXT = "#a9b1d6"
 VALUE = "#00CED1"
 FONT = "'Segoe UI', Ubuntu, Sans-Serif"
 
+# Only a subset of Dynamo work lands in this account's repositories, so the
+# total is tracked by hand rather than counted from repo names.
+DYNAMO_TASKS = "150+"
+
 QUERY = """
 { viewer {
     login
@@ -99,7 +103,7 @@ def overview_card(stats):
     rows = [
         ("Total Repositories", stats["repos"]),
         ("Private Repositories", stats["private"]),
-        ("Dynamo Task Environments", stats["dynamo"]),
+        ("Dynamo Tasks Shipped", stats["dynamo"]),
         ("Languages Used", stats["languages"]),
         ("Primary Language", stats["primary"]),
     ]
@@ -209,7 +213,7 @@ def main():
     stats = {
         "repos": viewer["repositories"]["totalCount"],
         "private": sum(1 for r in repos if r["isPrivate"]),
-        "dynamo": sum(1 for r in repos if r["name"].startswith("dynamo-")),
+        "dynamo": DYNAMO_TASKS,
         "languages": len(counter),
         "primary": ranked[0][0] if ranked else "n/a",
     }
