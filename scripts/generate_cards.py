@@ -469,13 +469,13 @@ def divider(width=900, height=8):
       <stop offset="100%" stop-color="{CYAN}" stop-opacity="0"/>
     </linearGradient>
     <radialGradient id="dvpulse">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect y="{height / 2 - 0.75}" width="{width}" height="1.5" fill="url(#dvline)"/>
-  <ellipse cy="{height / 2}" rx="70" ry="{height / 2}" fill="url(#dvpulse)">
-    <animate attributeName="cx" values="{-80};{width + 80}" dur="6s" repeatCount="indefinite"/>
+  <ellipse cx="-80" cy="{height / 2}" rx="64" ry="{height / 2}" fill="url(#dvpulse)">
+    <animate attributeName="cx" values="-80;{width + 80}" dur="6s" repeatCount="indefinite"/>
   </ellipse>
 </svg>
 """
