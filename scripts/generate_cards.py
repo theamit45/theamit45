@@ -43,6 +43,7 @@ def ssl_context():
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
 ICON_DIR = ASSETS / "icons"
+TILES = ASSETS / "tech"
 
 BG = "#1a1b27"
 BORDER = "#2f3352"
@@ -321,6 +322,27 @@ TECH_GROUPS = [
     ("Evaluation Toolchain", ["docker", "linux", "git", "github", "pytest", "vscode"]),
 ]
 
+TECH_LINKS = {
+    "python": "https://www.python.org",
+    "cplusplus": "https://isocpp.org",
+    "c": "https://en.cppreference.com/w/c",
+    "java": "https://dev.java",
+    "javascript": "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+    "bash": "https://www.gnu.org/software/bash/",
+    "react": "https://react.dev",
+    "nodejs": "https://nodejs.org",
+    "express": "https://expressjs.com",
+    "mongodb": "https://www.mongodb.com",
+    "html5": "https://developer.mozilla.org/en-US/docs/Web/HTML",
+    "css3": "https://developer.mozilla.org/en-US/docs/Web/CSS",
+    "docker": "https://www.docker.com",
+    "linux": "https://www.kernel.org",
+    "git": "https://git-scm.com",
+    "github": "https://github.com",
+    "pytest": "https://docs.pytest.org",
+    "vscode": "https://code.visualstudio.com",
+}
+
 
 def inline_icon(name, x, y, size):
     """Drop a devicon logo into the document at (x, y), scaled to `size`.
@@ -350,55 +372,29 @@ def inline_icon(name, x, y, size):
     )
 
 
-def tech_panel(width=900):
-    cols = 6
-    pad_x = 26
-    col_w = (width - pad_x * 2) / cols
-    tile_w, tile_h, icon_px = 112.0, 84.0, 42.0
-    group_gap, label_h = 20.0, 22.0
+def tech_tile(name, index, width=132, height=110):
+    """One technology as its own image so the README can wrap it in a link.
 
-    top = 20.0
-    height = top + len(TECH_GROUPS) * (label_h + tile_h + group_gap) - group_gap + 14
+    Each tile carries its own backdrop and sweep. They stay out of step with
+    each other because the drift begins at a negative offset that varies by
+    index, so eighteen separate images do not rise and fall in unison.
+    """
+    uid = f"t{name}"
+    defs, background = backdrop(width, height, uid, rx=12)
+    icon_px = 46.0
 
-    uid = "tp"
-    defs, background = backdrop(width, int(height), uid)
-
-    # No one-shot reveal here. This is the largest image on the page, and a
-    # fade from zero means it renders as an empty box until the animation
-    # timeline advances, which browsers delay for images below the fold. The
-    # drifting backdrop and the floating tiles supply the motion instead, and
-    # both look correct on their very first frame.
-    parts, y, index = [], top, 0
-    for group_name, names in TECH_GROUPS:
-        parts.append(
-            f'<text x="{pad_x + 6}" y="{y + 13}" font-family="{FONT}" font-size="12" '
-            f'font-weight="600" letter-spacing="1.6" fill="{TEXT}" '
-            f'fill-opacity="0.75">{esc(group_name.upper())}</text>'
-        )
-
-        row_y = y + label_h
-        for col, name in enumerate(names):
-            cx = pad_x + col * col_w + (col_w - tile_w) / 2
-            parts.append(
-                f"<g>{bob(index * 0.37, 3.0 + index % 3, 4.2 + (index % 4) * 0.55)}"
-                f'<rect x="{cx:.1f}" y="{row_y:.1f}" rx="12" width="{tile_w}" height="{tile_h}" '
-                f'fill="#20233a" fill-opacity="0.72" stroke="{BORDER}"/>'
-                f"{inline_icon(name, cx + (tile_w - icon_px) / 2, row_y + 13, icon_px)}"
-                f'<text x="{cx + tile_w / 2:.1f}" y="{row_y + 72:.1f}" text-anchor="middle" '
-                f'font-family="{FONT}" font-size="11.5" fill="{TEXT}">{esc(ICON_LABELS[name])}</text>'
-                f"</g>"
-            )
-            index += 1
-        y = row_y + tile_h + group_gap
-
-    return f"""<svg width="{width}" height="{height:.0f}" viewBox="0 0 {width} {height:.0f}" fill="none" xmlns="http://www.w3.org/2000/svg">
+    return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     {defs}
   </defs>
   {background}
-  <rect x="0.5" y="0.5" rx="10" width="{width - 1}" height="{height - 1:.0f}" fill="none" stroke="{BORDER}"/>
-  {"".join(parts)}
-  {sweep(width, int(height), uid, 9.0)}
+  <rect x="0.75" y="0.75" rx="12" width="{width - 1.5}" height="{height - 1.5}" fill="none" stroke="{BORDER}"/>
+  <g>{bob(index * 0.37, 3.0 + index % 3, 4.2 + (index % 4) * 0.55)}
+    {inline_icon(name, (width - icon_px) / 2, 21, icon_px)}
+  </g>
+  <text x="{width / 2}" y="{height - 17}" text-anchor="middle" font-family="{FONT}"
+        font-size="12" fill="{TEXT}">{esc(ICON_LABELS[name])}</text>
+  {sweep(width, height, uid, 6.5)}
 </svg>
 """
 
@@ -409,10 +405,6 @@ def tech_panel(width=900):
 # Things with no logo in devicon, so they are drawn as accent-coloured chips
 # rather than shoehorned into the icon grid.
 FOCUS_GROUPS = [
-    ("Also Working With", [
-        ("SQL", "#4479A1"), ("Ruff", "#D7FF64"), ("TOML", "#C75B39"),
-        ("uv / uvx", "#DE5FE9"), ("Zod", "#3E67B1"), ("Cursor", "#c9d1d9"),
-    ]),
     ("AI and LLM Systems", [
         ("Prompt Engineering", PURPLE), ("LLM Evaluation", BLUE),
         ("Terminal-Bench", CYAN), ("RLHF", "#16A085"),
@@ -777,6 +769,17 @@ CONTACT_PILLS = [
     ("leetcode", "leetcode", "leetcode.com/u/theamit45", "#FFA116"),
 ]
 
+# Tools with no devicon logo. Same pill, drawn with an accent dot instead of a
+# mark, so they can carry a link the way the contact pills do.
+TOOL_PILLS = [
+    ("sql", "SQL", "#4479A1", "https://en.wikipedia.org/wiki/SQL"),
+    ("ruff", "Ruff", "#D7FF64", "https://docs.astral.sh/ruff/"),
+    ("toml", "TOML", "#C75B39", "https://toml.io"),
+    ("uv", "uv / uvx", "#DE5FE9", "https://docs.astral.sh/uv/"),
+    ("zod", "Zod", "#3E67B1", "https://zod.dev"),
+    ("cursor", "Cursor", "#C9D1D9", "https://cursor.com"),
+]
+
 
 def simple_icon_path(name):
     src = (ICON_DIR / f"si-{name}.svg").read_text()
@@ -784,12 +787,20 @@ def simple_icon_path(name):
 
 
 def link_pill(label, colour, icon, uid, height=44.0):
+    """A pill sized to its label. `icon` is a 24x24 path, or None for a plain
+    accent dot when the tool has no mark worth inlining."""
     font, glyph = 14.5, 18.0
     pad_l, gap, pad_r = 17.0, 10.0, 19.0
     width = pad_l + glyph + gap + len(label) * font * 0.545 + pad_r
     r = height / 2
     scale = glyph / 24.0
     icon_y = (height - glyph) / 2
+
+    if icon:
+        mark = (f'<g transform="translate({pad_l},{icon_y:.1f}) scale({scale:.4f})">'
+                f'<path d="{icon}" fill="{colour}"/></g>')
+    else:
+        mark = f'<circle cx="{pad_l + glyph / 2:.1f}" cy="{height / 2}" r="5.5" fill="{colour}"/>'
 
     return f"""<svg width="{width:.0f}" height="{height:.0f}" viewBox="0 0 {width:.0f} {height:.0f}"
      fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -813,9 +824,7 @@ def link_pill(label, colour, icon, uid, height=44.0):
   </g>
   <rect x="0.75" y="0.75" rx="{r - 0.75}" width="{width - 1.5:.1f}" height="{height - 1.5:.1f}"
         fill="none" stroke="{colour}" stroke-opacity="0.55"/>
-  <g transform="translate({pad_l},{icon_y:.1f}) scale({scale:.4f})">
-    <path d="{icon}" fill="{colour}"/>
-  </g>
+  {mark}
   <text x="{pad_l + glyph + gap:.1f}" y="{height / 2 + font * 0.35:.1f}" font-family="{FONT}"
         font-size="{font}" font-weight="600" fill="#e6edf3">{esc(label)}</text>
 </svg>
@@ -1029,7 +1038,6 @@ def main():
         "github-stats.svg": overview_card(stats),
         "top-languages.svg": language_card(ranked, total),
         "terminal.svg": terminal_svg(),
-        "tech-stack.svg": tech_panel(),
         "focus.svg": focus_panel(),
         "contributions.svg": contribution_card(fetch_calendar(CONTRIB_YEAR), CONTRIB_YEAR),
         "divider.svg": divider(),
@@ -1046,6 +1054,17 @@ def main():
 
     for key, icon, label, colour in CONTACT_PILLS:
         written[f"contact-{key}.svg"] = link_pill(label, colour, simple_icon_path(icon), f"p{key}")
+
+    for key, label, colour, _url in TOOL_PILLS:
+        written[f"tool-{key}.svg"] = link_pill(label, colour, None, f"t{key}")
+
+    TILES.mkdir(exist_ok=True)
+    index = 0
+    for _group, names in TECH_GROUPS:
+        for name in names:
+            (TILES / f"{name}.svg").write_text(tech_tile(name, index))
+            index += 1
+    print(f"wrote {index} tech tiles to {TILES}")
 
     leetcode = fetch_leetcode()
     if leetcode:

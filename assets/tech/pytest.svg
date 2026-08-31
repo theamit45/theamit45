@@ -1,0 +1,23 @@
+<svg width="132" height="110" viewBox="0 0 132 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="tpytestgrid" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.05" fill="#2c3150"/>
+      <animateTransform attributeName="patternTransform" type="translate"
+        values="0,0;26,26" dur="20s" repeatCount="indefinite"/>
+    </pattern>
+    <radialGradient id="tpytesto0"><stop offset="0%" stop-color="#8A2BE2" stop-opacity="0.3"/><stop offset="100%" stop-color="#8A2BE2" stop-opacity="0"/></radialGradient><radialGradient id="tpytesto1"><stop offset="0%" stop-color="#00CED1" stop-opacity="0.24"/><stop offset="100%" stop-color="#00CED1" stop-opacity="0"/></radialGradient><radialGradient id="tpytesto2"><stop offset="0%" stop-color="#4169E1" stop-opacity="0.26"/><stop offset="100%" stop-color="#4169E1" stop-opacity="0"/></radialGradient>
+    <clipPath id="tpytestclip"><rect x="0.5" y="0.5" rx="12" width="131" height="109"/></clipPath>
+  </defs>
+  <g clip-path="url(#tpytestclip)">
+    <rect width="132" height="110" fill="#1a1b27"/>
+    <circle cx="24" cy="33" r="55" fill="url(#tpytesto0)"><animate attributeName="cx" values="24;45;3;24" dur="17s" repeatCount="indefinite"/><animate attributeName="cy" values="33;11;55;33" dur="22s" repeatCount="indefinite"/></circle><circle cx="108" cy="73" r="50" fill="url(#tpytesto1)"><animate attributeName="cx" values="108;129;87;108" dur="23s" repeatCount="indefinite"/><animate attributeName="cy" values="73;51;95;73" dur="30s" repeatCount="indefinite"/></circle><circle cx="69" cy="94" r="53" fill="url(#tpytesto2)"><animate attributeName="cx" values="69;90;48;69" dur="29s" repeatCount="indefinite"/><animate attributeName="cy" values="94;72;116;94" dur="38s" repeatCount="indefinite"/></circle>
+    <rect width="132" height="110" fill="url(#tpytestgrid)"/>
+  </g>
+  <rect x="0.75" y="0.75" rx="12" width="130.5" height="108.5" fill="none" stroke="#2f3352"/>
+  <g><animateTransform attributeName="transform" type="translate" values="0,0;0,-4.0;0,0" dur="4.2s" begin="-5.92s" repeatCount="indefinite"/>
+    <g transform="translate(43.0,21.0) scale(0.35938)"><path d="M31.512 30.398h61.304a3.006 3.006 0 010 6.012H31.512a3.007 3.007 0 01-3.004-3.004 3.008 3.008 0 013.004-3.008zm0 0" fill="#696969"/><path d="M32.047 24.32H44.37v2.844H32.047zm0 0" fill="#009fe3"/><path d="M48.168 24.32h12.324v2.844H48.168zm0 0" fill="#c7d302"/><path d="M64.07 24.32h12.328v2.844H64.07zm0 0" fill="#f07e16"/><path d="M79.91 24.32h12.324v2.844H79.91zm0 15.22h12.324v20.835H79.91zm0 0" fill="#df2815"/><path d="M64.07 39.54h12.352v33.847H64.07zm0 0" fill="#f07e16"/><path d="M48.168 39.54h12.324v50.698H48.168zm0 0" fill="#c7d302"/><path d="M32.047 39.54H44.37v61.792H32.047zm0 0" fill="#009fe3"/></g>
+  </g>
+  <text x="66.0" y="93" text-anchor="middle" font-family="'Segoe UI', Ubuntu, Sans-Serif"
+        font-size="12" fill="#a9b1d6">Pytest</text>
+  <g clip-path="url(#tpytestclip)" opacity="0.07"><rect x="-46" y="-110" width="17" height="330" fill="#ffffff" transform="rotate(14)"><animate attributeName="x" values="-66;165" dur="6.5s" repeatCount="indefinite"/></rect></g>
+</svg>

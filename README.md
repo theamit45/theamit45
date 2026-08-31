@@ -90,13 +90,49 @@ Toolchain: `Docker` · `Python` · `Bash` · `Pytest` · `uv/uvx` · `TOML` · `
 
 ## Tech Stack
 
+Every logo below links to the project's own site.
+
 <div align="center">
 
-<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech-stack.svg" alt="Tech stack. Languages: Python, C++, C, Java, JavaScript, Bash. Web and data: React, Node.js, Express, MongoDB, HTML5, CSS3. Evaluation toolchain: Docker, Linux, Git, GitHub, Pytest, VS Code." />
+<sub><b>LANGUAGES</b></sub>
+
+<a href="https://www.python.org" title="Python"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/python.svg" alt="Python" /></a>
+<a href="https://isocpp.org" title="C++"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/cplusplus.svg" alt="C++" /></a>
+<a href="https://en.cppreference.com/w/c" title="C"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/c.svg" alt="C" /></a>
+<a href="https://dev.java" title="Java"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/java.svg" alt="Java" /></a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" title="JavaScript"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/javascript.svg" alt="JavaScript" /></a>
+<a href="https://www.gnu.org/software/bash/" title="Bash"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/bash.svg" alt="Bash" /></a>
+
+<sub><b>WEB AND DATA</b></sub>
+
+<a href="https://react.dev" title="React"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/react.svg" alt="React" /></a>
+<a href="https://nodejs.org" title="Node.js"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/nodejs.svg" alt="Node.js" /></a>
+<a href="https://expressjs.com" title="Express"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/express.svg" alt="Express" /></a>
+<a href="https://www.mongodb.com" title="MongoDB"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/mongodb.svg" alt="MongoDB" /></a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML" title="HTML5"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/html5.svg" alt="HTML5" /></a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS" title="CSS3"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/css3.svg" alt="CSS3" /></a>
+
+<sub><b>EVALUATION TOOLCHAIN</b></sub>
+
+<a href="https://www.docker.com" title="Docker"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/docker.svg" alt="Docker" /></a>
+<a href="https://www.kernel.org" title="Linux"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/linux.svg" alt="Linux" /></a>
+<a href="https://git-scm.com" title="Git"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/git.svg" alt="Git" /></a>
+<a href="https://github.com" title="GitHub"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/github.svg" alt="GitHub" /></a>
+<a href="https://docs.pytest.org" title="Pytest"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/pytest.svg" alt="Pytest" /></a>
+<a href="https://code.visualstudio.com" title="VS Code"><img height="100" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tech/vscode.svg" alt="VS Code" /></a>
+
+<sub><b>ALSO WORKING WITH</b></sub>
+
+<a href="https://en.wikipedia.org/wiki/SQL" title="SQL"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tool-sql.svg" alt="SQL" /></a>
+<a href="https://docs.astral.sh/ruff/" title="Ruff"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tool-ruff.svg" alt="Ruff" /></a>
+<a href="https://toml.io" title="TOML"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tool-toml.svg" alt="TOML" /></a>
+<a href="https://docs.astral.sh/uv/" title="uv / uvx"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tool-uv.svg" alt="uv / uvx" /></a>
+<a href="https://zod.dev" title="Zod"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tool-zod.svg" alt="Zod" /></a>
+<a href="https://cursor.com" title="Cursor"><img height="42" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/tool-cursor.svg" alt="Cursor" /></a>
 
 <br/>
 
-<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/focus.svg" alt="Also working with SQL, Ruff, TOML, uv and uvx, Zod and Cursor. AI and LLM systems: prompt engineering, LLM evaluation, Terminal-Bench, RLHF, failure-mode analysis, agent sandboxing, GPT-5 and Claude Sonnet." />
+<img width="100%" src="https://raw.githubusercontent.com/theamit45/theamit45/main/assets/focus.svg" alt="AI and LLM systems: prompt engineering, LLM evaluation, Terminal-Bench, RLHF, failure-mode analysis, agent sandboxing, GPT-5 and Claude Sonnet." />
 
 </div>
 
